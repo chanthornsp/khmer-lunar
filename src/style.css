@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+	@import url("https://fonts.googleapis.com/css2?family=Hanuman:wght@100;300;400;700;900&display=swap");
+	.font-hanuman {
+		font-family: "Hanuman", serif;
+	}
+}
