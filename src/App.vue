@@ -33,6 +33,25 @@ const onUpdateToPage = (day) => {
   //reset khmerDaysInMonth
   khmerDaysInMonth.value.length = 0;
   attributes.value.length = 0;
+
+  // General date holidays 
+  holidays.value
+      .filter((item) => item.start_date.month === day.month)
+      .forEach((element) => {
+        attributes.value.push({
+          key:
+              "holidays" +
+              moment(element.start_date.day+'/'+day.month + "/" + day.year, "D/M/YYYY").format("YYYY-MM-DD"),
+          customData: {
+            title: element.summary,
+            class: "bg-red-600 text-white",
+          },
+          dates: moment(element.start_date.day+'/'+day.month + "/" + day.year, "D/M/YYYY").format(
+              "YYYY-MM-DD"
+          ),
+        });
+      });
+
   for (
     let i = 1;
     i <= moment(day.month + "/" + day.year, "M/YYYY").daysInMonth();
@@ -78,22 +97,6 @@ const onUpdateToPage = (day) => {
     }
   });
 
-  holidays.value
-    .filter((item) => item.start_date.month === day.month)
-    .forEach((element) => {
-      attributes.value.push({
-        key:
-          "holidays" +
-          moment(element.start_date.day+'/'+day.month + "/" + day.year, "D/M/YYYY").format("YYYY-MM-DD"),
-        customData: {
-          title: element.summary,
-          class: "bg-red-600 text-white",
-        },
-        dates: moment(element.start_date.day+'/'+day.month + "/" + day.year, "D/M/YYYY").format(
-          "YYYY-MM-DD"
-        ),
-      });
-    });
   // sorting by date
   attributes.value.sort(function (x, y) {
     return new Date(x.dates) - new Date(y.dates);
