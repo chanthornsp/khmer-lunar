@@ -1,16 +1,21 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import useKhmerDate from "./Composables/useKhmerDate";
 import { Calendar } from "v-calendar";
 import moment from "moment";
 import usePublicHolidays from "./Composables/usePublicHolidays.js";
 import TheHolidaysList from "./components/TheHolidaysList.vue";
 
+const loaded = ref(false);
+onMounted(() => {
+  loaded.value = true;
+});
+
 const { holidays, traditional_holidays } = usePublicHolidays();
 const masks = ref({
   weekdays: "WWW",
 });
-const attributes = ref([
+const attrs = ref([
   {
     key: 1,
     customData: {
@@ -32,25 +37,39 @@ const khmerDaysInMonth = ref([]);
 const onUpdateToPage = (day) => {
   //reset khmerDaysInMonth
   khmerDaysInMonth.value.length = 0;
-  attributes.value.length = 0;
+  attrs.value.length = 0;
 
-  // General date holidays 
+  // General date holidays
+  generateHolidaysFromCurrentMonth(day);
+
+  // sorting by date
+  attrs.value.sort(function (x, y) {
+    return new Date(x.dates) - new Date(y.dates);
+  });
+};
+
+const generateHolidaysFromCurrentMonth = (day) => {
   holidays.value
-      .filter((item) => item.start_date.month === day.month)
-      .forEach((element) => {
-        attributes.value.push({
-          key:
-              "holidays" +
-              moment(element.start_date.day+'/'+day.month + "/" + day.year, "D/M/YYYY").format("YYYY-MM-DD"),
-          customData: {
-            title: element.summary,
-            class: "bg-red-600 text-white",
-          },
-          dates: moment(element.start_date.day+'/'+day.month + "/" + day.year, "D/M/YYYY").format(
-              "YYYY-MM-DD"
-          ),
-        });
+    .filter((item) => item.start_date.month === day.month)
+    .forEach((element) => {
+      attrs.value.push({
+        key:
+          "holidays" +
+          moment(
+            element.start_date.day + "/" + day.month + "/" + day.year,
+            "D/M/YYYY"
+          ).format("YYYY-MM-DD"),
+        customData: {
+          title: element.summary,
+          description: element.description,
+          class: "bg-red-600 text-white",
+        },
+        dates: moment(
+          element.start_date.day + "/" + day.month + "/" + day.year,
+          "D/M/YYYY"
+        ).format("YYYY-MM-DD"),
       });
+    });
 
   for (
     let i = 1;
@@ -85,10 +104,11 @@ const onUpdateToPage = (day) => {
     );
     if (!!filteredHolidays.length) {
       filteredHolidays.forEach((element) => {
-        attributes.value.push({
+        attrs.value.push({
           key: "traditional_holidays" + option.date,
           customData: {
             title: element.summary,
+            description: element.description,
             class: "bg-red-600 text-white",
           },
           dates: option.date,
@@ -96,54 +116,63 @@ const onUpdateToPage = (day) => {
       });
     }
   });
-
-  // sorting by date
-  attributes.value.sort(function (x, y) {
-    return new Date(x.dates) - new Date(y.dates);
-  });
+};
+const isHolidays = (attributes) => {
+  let attrsObject = Object.assign([], attributes);
+  if (!!attrsObject.length) {
+    return !!attrsObject.filter(
+      (attr) => attr.customData.description === "Holiday in Cambodia"
+    ).length;
+  } else {
+    return false;
+  }
 };
 </script>
 
 <template>
-  <div class="p-5 container mx-auto aspect-video max-w-2xl">
+  <div class="p-5 container mx-auto aspect-video ">
     <div class="text-center section">
       <h2 class="p-2 text-xl font-bold">Khmer Calendar</h2>
-      <Calendar
-        class="custom-calendar max-w-full"
-        @update:to-page="onUpdateToPage"
-        :masks="masks"
-        :attributes="attributes"
-        disable-page-swipe
-        is-expanded
-      >
-        <template #day-content="{ day, attributes }">
-          <div
-            @click.prevent="onDayClick(day)"
-            class="cursor-pointer p-0.5 transform hover:scale-110 transition-all duration-150 ease-linear w-full"
-          >
+      <template v-if="loaded">
+        <Calendar
+          class="custom-calendar max-w-full"
+          @update:to-page="onUpdateToPage"
+          :masks="masks"
+          :attributes="attrs"
+          disable-page-swipe
+          is-expanded
+        >
+          <template #day-content="{ day, attributes }">
             <div
-              :class="[
-                'p-2 border rounded-md ',
-                moment().format('YYY-M-D') ===
-                moment(day.date).format('YYY-M-D')
-                  ? 'bg-blue-600 text-white'
-                  : '',
-              ]"
+              @click.prevent="onDayClick(day)"
+              class="cursor-pointer p-0.5 transform hover:scale-110 transition-all duration-150 ease-linear w-full"
             >
-              <div>
-                {{ day.day }}
-              </div>
-              <div class="font-hanuman">
-                {{ khmerDate(day.date).toKhDate("d N") }}
+              <div
+                :class="[
+                  'p-2 border rounded-md ',
+                  isHolidays(attributes)
+                    ? 'bg-red-600 text-white'
+                    : moment().format('YYY-M-D') ===
+                      moment(day.date).format('YYY-M-D')
+                    ? 'bg-blue-600 text-white'
+                    : '',
+                ]"
+              >
+                <span>
+                  {{ day.day }}
+                </span>
+                <div class="font-hanuman">
+                  {{ khmerDate(day.date).toKhDate("d N") }}
+                </div>
               </div>
             </div>
-          </div>
-        </template>
-        <template #footer> Footer</template>
-      </Calendar>
+          </template>
+          <template #footer> Footer</template>
+        </Calendar>
+      </template>
     </div>
     <div class="p-4">
-      <TheHolidaysList :holidays="attributes" />
+      <TheHolidaysList :holidays="attrs" />
     </div>
   </div>
 </template>
