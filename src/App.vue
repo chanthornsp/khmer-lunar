@@ -5,10 +5,10 @@ import { Calendar } from "v-calendar";
 import moment from "moment";
 import usePublicHolidays from "./Composables/usePublicHolidays.js";
 import TheHolidaysList from "./components/TheHolidaysList.vue";
+const { khmerDate,khmerNewYearDate } = useKhmerDate();
 
-const loaded = ref(false);
 onMounted(() => {
-  loaded.value = true;
+  console.log(khmerNewYearDate.value(2032));
 });
 
 const { holidays, traditional_holidays } = usePublicHolidays();
@@ -28,7 +28,6 @@ const attrs = ref([
     dates: moment().format(),
   },
 ]);
-const { khmerDate } = useKhmerDate();
 const onDayClick = (day) => {
   console.log(day);
 };
@@ -130,46 +129,47 @@ const isHolidays = (attributes) => {
 </script>
 
 <template>
-  <div class="p-5 container mx-auto aspect-video ">
+  <pre>
+  {{khmerNewYearDate(2028)}}
+  </pre>
+  <div class="p-5 container mx-auto aspect-video">
     <div class="text-center section">
       <h2 class="p-2 text-xl font-bold">Khmer Calendar</h2>
-      <template v-if="loaded">
-        <Calendar
-          class="custom-calendar max-w-full"
-          @update:to-page="onUpdateToPage"
-          :masks="masks"
-          :attributes="attrs"
-          disable-page-swipe
-          is-expanded
-        >
-          <template #day-content="{ day, attributes }">
+      <Calendar
+        class="custom-calendar max-w-full"
+        @update:to-page="onUpdateToPage"
+        :masks="masks"
+        :attributes="attrs"
+        disable-page-swipe
+        is-expanded
+      >
+        <template #day-content="{ day, attributes }">
+          <div
+            @click.prevent="onDayClick(day)"
+            class="cursor-pointer p-0.5 transform hover:scale-110 transition-all duration-150 ease-linear w-full"
+          >
             <div
-              @click.prevent="onDayClick(day)"
-              class="cursor-pointer p-0.5 transform hover:scale-110 transition-all duration-150 ease-linear w-full"
+              :class="[
+                'p-2 border rounded-md ',
+                isHolidays(attributes)
+                  ? 'bg-red-600 text-white'
+                  : moment().format('YYY-M-D') ===
+                    moment(day.date).format('YYY-M-D')
+                  ? 'bg-blue-600 text-white'
+                  : '',
+              ]"
             >
-              <div
-                :class="[
-                  'p-2 border rounded-md ',
-                  isHolidays(attributes)
-                    ? 'bg-red-600 text-white'
-                    : moment().format('YYY-M-D') ===
-                      moment(day.date).format('YYY-M-D')
-                    ? 'bg-blue-600 text-white'
-                    : '',
-                ]"
-              >
-                <span>
-                  {{ day.day }}
-                </span>
-                <div class="font-hanuman">
-                  {{ khmerDate(day.date).toKhDate("d N") }}
-                </div>
+              <span>
+                {{ day.day }}
+              </span>
+              <div class="font-hanuman">
+                {{ khmerDate(day.date).toKhDate("d N") }}
               </div>
             </div>
-          </template>
-          <template #footer> Footer</template>
-        </Calendar>
-      </template>
+          </div>
+        </template>
+        <template #footer> Footer</template>
+      </Calendar>
     </div>
     <div class="p-4">
       <TheHolidaysList :holidays="attrs" />
