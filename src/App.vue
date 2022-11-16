@@ -1,17 +1,19 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import {onMounted, ref} from "vue";
 import useKhmerDate from "./Composables/useKhmerDate";
-import { Calendar } from "v-calendar";
+import {Calendar} from "v-calendar";
 import moment from "moment";
 import usePublicHolidays from "./Composables/usePublicHolidays.js";
 import TheHolidaysList from "./components/TheHolidaysList.vue";
-const { khmerDate,khmerNewYearDate } = useKhmerDate();
+
+const {khmerDate, khmerNewYearDate} = useKhmerDate();
 
 onMounted(() => {
-  console.log(khmerNewYearDate.value(2032));
+
 });
 
-const { holidays, traditional_holidays } = usePublicHolidays();
+const {holidays, traditional_holidays} = usePublicHolidays();
+const khmerNewYearDatetime = ref()
 const masks = ref({
   weekdays: "WWW",
 });
@@ -37,7 +39,7 @@ const onUpdateToPage = (day) => {
   //reset khmerDaysInMonth
   khmerDaysInMonth.value.length = 0;
   attrs.value.length = 0;
-
+  console.log(khmerNewYearDate.value(day.year))
   // General date holidays
   generateHolidaysFromCurrentMonth(day);
 
@@ -49,34 +51,34 @@ const onUpdateToPage = (day) => {
 
 const generateHolidaysFromCurrentMonth = (day) => {
   holidays.value
-    .filter((item) => item.start_date.month === day.month)
-    .forEach((element) => {
-      attrs.value.push({
-        key:
-          "holidays" +
-          moment(
-            element.start_date.day + "/" + day.month + "/" + day.year,
-            "D/M/YYYY"
+      .filter((item) => item.start_date.month === day.month)
+      .forEach((element) => {
+        attrs.value.push({
+          key:
+              "holidays" +
+              moment(
+                  element.start_date.day + "/" + day.month + "/" + day.year,
+                  "D/M/YYYY"
+              ).format("YYYY-MM-DD"),
+          customData: {
+            title: element.summary,
+            description: element.description,
+            class: "bg-red-600 text-white",
+          },
+          dates: moment(
+              element.start_date.day + "/" + day.month + "/" + day.year,
+              "D/M/YYYY"
           ).format("YYYY-MM-DD"),
-        customData: {
-          title: element.summary,
-          description: element.description,
-          class: "bg-red-600 text-white",
-        },
-        dates: moment(
-          element.start_date.day + "/" + day.month + "/" + day.year,
-          "D/M/YYYY"
-        ).format("YYYY-MM-DD"),
+        });
       });
-    });
 
   for (
-    let i = 1;
-    i <= moment(day.month + "/" + day.year, "M/YYYY").daysInMonth();
-    i++
+      let i = 1;
+      i <= moment(day.month + "/" + day.year, "M/YYYY").daysInMonth();
+      i++
   ) {
     let date = moment(day.year + "-" + day.month + "-" + i, "YYYY-M-D").format(
-      "YYYY-MM-DD"
+        "YYYY-MM-DD"
     );
     let lurna = khmerDate.value(date);
     khmerDaysInMonth.value.push({
@@ -85,21 +87,21 @@ const generateHolidaysFromCurrentMonth = (day) => {
       date: date,
     });
     traditional_holidays.value.filter((item) =>
-      khmerDaysInMonth.value
-        .filter(
-          (item2) =>
-            item2.khmer_month === item.start_date.month &&
-            item2.khmer_day === item.start_date.day
-        )
-        .includes(item)
+        khmerDaysInMonth.value
+            .filter(
+                (item2) =>
+                    item2.khmer_month === item.start_date.month &&
+                    item2.khmer_day === item.start_date.day
+            )
+            .includes(item)
     );
   }
 
   khmerDaysInMonth.value.reduce(function (filtered, option) {
     let filteredHolidays = traditional_holidays.value.filter(
-      (item) =>
-        item.start_date.month === option.khmer_month &&
-        item.start_date.day === option.khmer_day
+        (item) =>
+            item.start_date.month === option.khmer_month &&
+            item.start_date.day === option.khmer_day
     );
     if (!!filteredHolidays.length) {
       filteredHolidays.forEach((element) => {
@@ -120,7 +122,7 @@ const isHolidays = (attributes) => {
   let attrsObject = Object.assign([], attributes);
   if (!!attrsObject.length) {
     return !!attrsObject.filter(
-      (attr) => attr.customData.description === "Holiday in Cambodia"
+        (attr) => attr.customData.description === "Holiday in Cambodia"
     ).length;
   } else {
     return false;
@@ -130,26 +132,26 @@ const isHolidays = (attributes) => {
 
 <template>
   <pre>
-  {{khmerNewYearDate(2028)}}
+  {{ khmerNewYearDatetime }}
   </pre>
   <div class="p-5 container mx-auto aspect-video">
     <div class="text-center section">
       <h2 class="p-2 text-xl font-bold">Khmer Calendar</h2>
       <Calendar
-        class="custom-calendar max-w-full"
-        @update:to-page="onUpdateToPage"
-        :masks="masks"
-        :attributes="attrs"
-        disable-page-swipe
-        is-expanded
+          class="custom-calendar max-w-full"
+          @update:to-page="onUpdateToPage"
+          :masks="masks"
+          :attributes="attrs"
+          disable-page-swipe
+          is-expanded
       >
         <template #day-content="{ day, attributes }">
           <div
-            @click.prevent="onDayClick(day)"
-            class="cursor-pointer p-0.5 transform hover:scale-110 transition-all duration-150 ease-linear w-full"
+              @click.prevent="onDayClick(day)"
+              class="cursor-pointer p-0.5 transform hover:scale-110 transition-all duration-150 ease-linear w-full"
           >
             <div
-              :class="[
+                :class="[
                 'p-2 border rounded-md ',
                 isHolidays(attributes)
                   ? 'bg-red-600 text-white'
@@ -172,7 +174,7 @@ const isHolidays = (attributes) => {
       </Calendar>
     </div>
     <div class="p-4">
-      <TheHolidaysList :holidays="attrs" />
+      <TheHolidaysList :holidays="attrs"/>
     </div>
   </div>
 </template>
