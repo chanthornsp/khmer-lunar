@@ -36,7 +36,6 @@ const onUpdateToPage = (day) => {
   attrs.value.length = 0;
   // General date events
   generateHolidaysFromCurrentMonth(day);
-
   // sorting by date
   attrs.value.sort(function (x, y) {
     return new Date(x.dates) - new Date(y.dates);
