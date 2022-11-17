@@ -15,7 +15,7 @@ defineProps({
             class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -left-1.5 border border-white"
           ></div>
           <time class="mb-1 text-sm font-normal leading-none text-gray-400"
-            >{{ moment(holiday.dates).locale("km").format("ll") }}
+            >{{ moment(holiday.dates).locale("km").format("dddd ll") }}
           </time>
           <h3 class="text-lg font-semibold text-gray-900">
             {{ holiday.customData.title.kh }}
