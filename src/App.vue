@@ -9,8 +9,6 @@ import useKhmerNewYearDate from "./Composables/useKhmerNewYearDate.js";
 
 const { khmerDate, khmerNewYearDate } = useKhmerDate();
 
-onMounted(() => {});
-
 const { events, traditional_events } = usePublicHolidays();
 const khmerNewYearDatetime = ref();
 const masks = ref({
