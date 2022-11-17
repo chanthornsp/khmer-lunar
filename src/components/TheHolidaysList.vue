@@ -2,13 +2,13 @@
 import moment from "moment/min/moment-with-locales";
 
 defineProps({
-  holidays: Object,
+  events: Object,
 });
 </script>
 
 <template>
   <ol class="relative border-l border-gray-200 font-hanuman">
-    <template v-for="(holiday, index) in holidays" :key="index">
+    <template v-for="(holiday, index) in events" :key="index">
       <template v-if="holiday.customData.title.en !== 'today'">
         <li class="ml-4 mt-4">
           <div

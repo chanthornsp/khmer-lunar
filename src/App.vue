@@ -5,12 +5,13 @@ import { Calendar } from "v-calendar";
 import moment from "moment";
 import usePublicHolidays from "./Composables/usePublicHolidays.js";
 import TheHolidaysList from "./components/TheHolidaysList.vue";
+import useKhmerNewYearDate from "./Composables/useKhmerNewYearDate.js";
 
 const { khmerDate, khmerNewYearDate } = useKhmerDate();
 
 onMounted(() => {});
 
-const { holidays, traditional_holidays } = usePublicHolidays();
+const { events, traditional_events } = usePublicHolidays();
 const khmerNewYearDatetime = ref();
 const masks = ref({
   weekdays: "WWW",
@@ -37,7 +38,7 @@ const onUpdateToPage = (day) => {
   //reset khmerDaysInMonth
   khmerDaysInMonth.value.length = 0;
   attrs.value.length = 0;
-  // General date holidays
+  // General date events
   generateHolidaysFromCurrentMonth(day);
 
   // sorting by date
@@ -49,27 +50,15 @@ const onUpdateToPage = (day) => {
 const generateHolidaysFromCurrentMonth = (day) => {
   //get khmer new year date
   if (day.month === 4) {
-    khmerNewYearDate.value(day.year).days.forEach((date, key) => {
-      attrs.value.push({
-        key: "traditional_holidays" + moment(date).format("YYYY-MM-DD"),
-        customData: {
-          title: {
-            kh: "ពិធីបុណ្យចូលឆ្នាំថ្មី ប្រពៃណីជាតិ",
-            en: "Khmer New Year's Day (Day " + (key + 1) + ")",
-          },
-          description: "Holiday in Cambodia",
-          class: "bg-red-600 text-white",
-        },
-        dates: moment(date).format("YYYY-MM-DD"),
-      });
-    });
+    const { khmerNewYearAttrs } = useKhmerNewYearDate(day);
+    attrs.value.push(...khmerNewYearAttrs.value);
   }
-  holidays.value
+  events.value
     .filter((item) => item.start_date.month === day.month)
     .forEach((element) => {
       attrs.value.push({
         key:
-          "holidays" +
+          "events" +
           moment(
             element.start_date.day + "/" + day.month + "/" + day.year,
             "D/M/YYYY"
@@ -100,7 +89,7 @@ const generateHolidaysFromCurrentMonth = (day) => {
       khmer_day: lurna.toKhDate("dN"),
       date: date,
     });
-    traditional_holidays.value.filter((item) =>
+    traditional_events.value.filter((item) =>
       khmerDaysInMonth.value
         .filter(
           (item2) =>
@@ -112,7 +101,7 @@ const generateHolidaysFromCurrentMonth = (day) => {
   }
 
   khmerDaysInMonth.value.reduce(function (filtered, option) {
-    let filteredHolidays = traditional_holidays.value.filter(
+    let filteredHolidays = traditional_events.value.filter(
       (item) =>
         item.start_date.month === option.khmer_month &&
         item.start_date.day === option.khmer_day
@@ -120,7 +109,7 @@ const generateHolidaysFromCurrentMonth = (day) => {
     if (!!filteredHolidays.length) {
       filteredHolidays.forEach((element) => {
         attrs.value.push({
-          key: "traditional_holidays" + option.date,
+          key: "traditional_events" + option.date,
           customData: {
             title: element.summary,
             description: element.description,
@@ -188,7 +177,7 @@ const isHolidays = (attributes) => {
       </Calendar>
     </div>
     <div class="p-4">
-      <TheHolidaysList :holidays="attrs" />
+      <TheHolidaysList :events="attrs" />
     </div>
   </div>
 </template>
