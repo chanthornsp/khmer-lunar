@@ -1,16 +1,14 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import {onMounted, ref} from "vue";
 import useKhmerDate from "../Composables/useKhmerDate";
-import { Calendar } from "v-calendar";
+import {Calendar} from "v-calendar";
 import moment from "moment";
 import usePublicHolidays from "../Composables/usePublicHolidays.js";
 import TheHolidaysList from "../components/TheHolidaysList.vue";
 import useKhmerNewYearDate from "../Composables/useKhmerNewYearDate.js";
 
-const { khmerDate, khmerNewYearDate } = useKhmerDate();
-
-const { events, traditional_events } = usePublicHolidays();
-const khmerNewYearDatetime = ref();
+const {khmerDate, khmerNewYearDate} = useKhmerDate();
+const {events, traditional_events} = usePublicHolidays();
 const masks = ref({
   weekdays: "WWW",
 });
@@ -31,7 +29,7 @@ const onDayClick = (day) => {
   console.log(day);
 };
 const khmerDaysInMonth = ref([]);
-
+const khmerMonthInCurrentMonth = ref();
 const onUpdateToPage = (day) => {
   //reset khmerDaysInMonth
   khmerDaysInMonth.value.length = 0;
@@ -48,7 +46,7 @@ const onUpdateToPage = (day) => {
 const generateHolidaysFromCurrentMonth = (day) => {
   //get khmer new year date
   if (day.month === 4) {
-    const { khmerNewYearAttrs } = useKhmerNewYearDate(day);
+    const {khmerNewYearAttrs} = useKhmerNewYearDate(day);
     attrs.value.push(...khmerNewYearAttrs.value);
   }
   events.value
@@ -118,6 +116,10 @@ const generateHolidaysFromCurrentMonth = (day) => {
       });
     }
   });
+
+  khmerMonthInCurrentMonth.value = [
+    ...new Set(khmerDaysInMonth.value.map((item) => item.khmer_month)),
+  ];
 };
 const isHolidays = (attributes) => {
   let attrsObject = Object.assign([], attributes);
@@ -143,8 +145,19 @@ const isHolidays = (attributes) => {
           disable-page-swipe
           is-expanded
       >
-        <template #header-title>
-          Show Khmer Months here..
+        <template #header-title="page">
+          <div class="font-hanuman font-bold text-2xl">
+            <span>{{ khmerMonthInCurrentMonth[0] }}</span>
+            -
+            <span>{{ khmerMonthInCurrentMonth[1] }}</span>
+          </div>
+          <div class="mt-3">
+            {{
+              moment({y: page.year, M: page.month - 1, d: 1}).format(
+                  "MMMM, YYYY"
+              )
+            }}
+          </div>
         </template>
         <template #day-content="{ day, attributes }">
           <div
@@ -175,7 +188,7 @@ const isHolidays = (attributes) => {
       </Calendar>
     </div>
     <div class="p-4">
-      <TheHolidaysList :events="attrs" />
+      <TheHolidaysList :events="attrs"/>
     </div>
   </div>
 </template>
