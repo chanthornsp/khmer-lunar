@@ -7,7 +7,7 @@ defineProps({
 </script>
 
 <template>
-  <ol class="relative border-l border-gray-200 font-hanuman">
+  <ol class="relative border-l border-gray-200 font-nokora">
     <template v-for="(holiday, index) in events" :key="index">
       <template v-if="holiday.customData.title.en !== 'today'">
         <li class="ml-4 mt-4" :class="[holiday.customData.description==='Holiday in Cambodia'?'text-red-600':'text-blue-600']">
@@ -17,7 +17,7 @@ defineProps({
           <time class="mb-1 text-sm font-normal leading-none opacity-70"
             >{{ moment(holiday.dates).locale("km").format("dddd ll") }}
           </time>
-          <h3 class="text-lg font-semibold">
+          <h3 class="text-lg font-bold">
             {{ holiday.customData.title.kh }}
           </h3>
           <p class="text-base font-normal opacity-70">
