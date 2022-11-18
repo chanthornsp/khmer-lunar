@@ -171,6 +171,22 @@ export default function usePublicHolidays() {
         month: 11,
       },
       image: "",
+    },{
+      id: 12,
+      summary: {
+        kh: "ទិវា​សុខភាព​មាត់​ធ្មេញ",
+        en: "National Independence Day",
+      },
+      description: "General Event",
+      start_date: {
+        day: 31,
+        month: 1,
+      },
+      end_date: {
+        day: 31,
+        month: 1,
+      },
+      image: "",
     },
   ]);
   const traditional_events = ref([

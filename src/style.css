@@ -3,8 +3,12 @@
 @tailwind utilities;
 
 @layer utilities {
-	@import url("https://fonts.googleapis.com/css2?family=Hanuman:wght@100;300;400;700;900&display=swap");
-	.font-hanuman {
-		font-family: "Hanuman", serif;
-	}
+  @import url("https://fonts.googleapis.com/css2?family=Hanuman:wght@100;300;400;700;900&display=swap");
+  .font-hanuman {
+    font-family: "Hanuman", serif;
+  }
+
+  .vc-weekday {
+    @apply font-hanuman font-bold text-black text-lg;
+  }
 }
