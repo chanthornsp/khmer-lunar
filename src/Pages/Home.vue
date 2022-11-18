@@ -175,6 +175,7 @@ const weeksToKh = () => {
         "border-top-right-radius: 0.375rem; " +
         "border-bottom-right-radius: 0.375rem ";
       text.innerText = "សៅរ៍";
+      
     }
   });
 };
