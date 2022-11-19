@@ -23,7 +23,7 @@ const attrs = ref([
   },
 ]);
 const khmerDaysInMonth = ref([]);
-const khmerMonthInCurrentMonth = ref();
+const khmerMonthInCurrentMonth = ref([1,2]);
 const onUpdatePage = (day) => {
   //reset khmerDaysInMonth
   khmerDaysInMonth.value.length = 0;
@@ -125,7 +125,13 @@ const generateHolidaysFromCurrentMonth = (day) => {
 <template>
   <div class="flex-col-reverse lg:flex flex-col lg:flex-row gap-4 mx-auto">
     <div class="w-full lg:w-2/3 shrink-0">
-      <TheCalendar @onUpdatePage="onUpdatePage" />
+      <TheCalendar
+        :attributes="attrs"
+        @onUpdatePage="onUpdatePage"
+        :current-khmer-months="
+          khmerMonthInCurrentMonth[0] + ' ~ ' + khmerMonthInCurrentMonth[1]
+        "
+      />
     </div>
     <div class="w-full">
       <TheHolidaysList :events="attrs" />

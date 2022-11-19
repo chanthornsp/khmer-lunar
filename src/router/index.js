@@ -5,9 +5,14 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: "/home-2",
+      name: "home2",
+      component: Home,
+    },
+    {
       path: "/",
       name: "home",
-      component: Home,
+      component: () => import("../Pages/SPCalendar.vue"),
     },
     {
       path: "/author",

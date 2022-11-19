@@ -1,9 +1,15 @@
 <script setup>
-import moment from "moment";
+import moment from "moment/min/moment-with-locales";
 import { computed, onMounted, ref, watch } from "vue";
 import useKhmerDate from "../Composables/useKhmerDate.js";
 
+const props = defineProps({
+  attributes: Object,
+  currentKhmerMonths: String,
+});
+const emit = defineEmits(["onPrev", "onNext", "onUpdatePage"]);
 const { khmerDate } = useKhmerDate();
+const daysOfWeek = ref([]);
 const days = ref([]);
 const currentMonth = ref(moment().month() + 1);
 const currentYear = ref(moment().year());
@@ -11,7 +17,6 @@ const initDate = computed(() =>
   moment(currentYear.value + "-" + currentMonth.value + "-" + "1", "YYYY-M-D")
 );
 
-const emit = defineEmits(["onPrev", "onNext", "onUpdatePage"]);
 const onPrev = () => {
   currentMonth.value--;
   if (currentMonth.value === 0) {
@@ -44,6 +49,11 @@ onMounted(() => {
   init();
 });
 const init = () => {
+  // generate days of the week Sun-Sat
+  daysOfWeek.value.length = 0;
+  for (let w = 0; w < 7; w++) {
+    daysOfWeek.value.push(moment().locale("km").day(w).format("dddd"));
+  }
   // generate full calendar
   let date = initDate.value;
   let currentDaysInMonth = date.clone().daysInMonth();
@@ -67,6 +77,7 @@ const init = () => {
       date: prevDate,
       khDate: khmerDate.value(prevDate),
       nextMonth: false,
+      attributes: attrsFilter(prevDate),
     });
   }
   //current days in month
@@ -78,6 +89,7 @@ const init = () => {
       date: currentDate,
       khDate: khmerDate.value(currentDate),
       nextMonth: false,
+      attributes: attrsFilter(currentDate),
     });
   }
   //next days in month
@@ -95,52 +107,100 @@ const init = () => {
       date: nextDate,
       khDate: khmerDate.value(nextDate),
       nextMonth: true,
+      attributes: attrsFilter(nextDate),
     });
+  }
+};
+
+const attrsFilter = (dates) => {
+  return props.attributes.filter((item) => dates.isSame(item.dates));
+};
+
+const isHolidays = (attributes) => {
+  let attrsObject = Object.assign([], attributes);
+  if (attrsObject.length) {
+    if (
+      attrsObject.filter(
+        (attr) => attr.customData.description === "Holiday in Cambodia"
+      ).length
+    ) {
+      return "text-red-600 bg-red-100";
+    } else {
+      return "text-blue-600 bg-blue-100";
+    }
+  } else {
+    return "bg-white";
   }
 };
 </script>
 
 <template>
   <div class="p-5">
-    <div class="font-nokora max-w-3xl bg-gray-200 mx-auto p-2 rounded-xl">
+    <div class="font-nokora w-full bg-white border mx-auto p-2 rounded-xl">
       <!--Header calendar-->
-      <div class="items-center justify-between flex mb-3">
+      <div class="items-center justify-between flex mb-4">
         <div>
           <button type="button" @click.prevent="onPrev">Prev.</button>
         </div>
-        <div>{{ initDate }}</div>
+        <div class="text-center">
+          <h2 class="text-lg md:text-xl lg:text-2xl font-bold">
+            {{ currentKhmerMonths }}
+          </h2>
+          <h2 class="text-lg md:text-xl text-gray-600 font-bold">
+            {{ initDate.format("MMMM, YYYY") }}
+          </h2>
+        </div>
         <div>
           <button type="button" @click.prevent="onNext">Next</button>
         </div>
       </div>
       <!--Week Day-->
-      <div class="flex gap-2 justify-between text-center items-center mb-2">
-        <div class="bg-green-100 w-full">អាទិត្យ</div>
-        <div class="bg-green-100 w-full">ច័ន្ទ</div>
-        <div class="bg-green-100 w-full">អង្គារ</div>
-        <div class="bg-green-100 w-full">ពុធ</div>
-        <div class="bg-green-100 w-full">ព្រហស្បតិ៍</div>
-        <div class="bg-green-100 w-full">សុក្រ</div>
-        <div class="bg-green-100 w-full">សៅរ៍</div>
+      <div
+        class="flex gap-2 justify-between text-center items-center mb-2 bg-white rounded-md border overflow-hidden font-bold text-lg"
+      >
+        <template v-for="(week, key) in daysOfWeek" :key="week">
+          <div
+            :class="[key === 0 ? 'bg-red-600 text-white' : '', 'w-full py-3']"
+          >
+            {{ week }}
+          </div>
+        </template>
       </div>
       <!--Days-->
       <div class="grid gap-2 grid-cols-7">
         <template v-for="day in days" :key="day">
           <div
-            class="text-center"
-            :class="
-              day.prevMonth
-                ? 'bg-gray-100'
-                : day.nextMonth
-                ? 'bg-gray-300'
-                : 'bg-green-100'
-            "
+            class="w-full aspect-[10/8] shadow rounded-md border md:p-2"
+            :class="[
+              day.prevMonth || day.nextMonth
+                ? 'opacity-20 bg-gray-100'
+                : 'bg-white',
+              isHolidays(day.attributes),
+              day.date.weekday() === 0 ? 'text-red-600' : '',
+            ]"
           >
-            <div>
-              {{ day.day }}
+            <div
+              class="flex lg:gap-1 flex-col items-center md:flex-row md:items-start"
+            >
+              <div class="text-lg md:text-3xl font-bold shrink-0">
+                {{ day.day }}
+              </div>
+              <div
+                class="w-full flex justify-center flex-col md:justify-start items-center md:items-end font-nokora text-sm md:text-base text-center"
+              >
+                <div>
+                  {{ day.khDate.toKhDate("d N") }}
+                </div>
+              </div>
             </div>
-            <div>
-              {{ day.khDate.toKhDate("d N") }}
+            <div
+              v-if="
+                (day.khDate.khDay() === 0 || day.day === 1) &&
+                day.nextMonth === false
+              "
+              class="text-blue-600 hidden md:block"
+            >
+              {{ day.khDate.toKhDate("m") }}
             </div>
           </div>
         </template>

@@ -13,17 +13,25 @@ import { RouterLink, RouterView } from "vue-router";
         </h1>
       </div>
       <div>
-        <ul class="flex gap-2">
-          <li>
+        <ul class="flex overflow-x-auto whitespace-nowrap divide-x font-bold">
+          <li
+            class="p-2 hover:bg-gray-200 rounded-md transition-all duration-150 ease-in-out"
+          >
             <a href="https://github.com/ChanthornAcademy/khmer-lunar">Github</a>
           </li>
-          <li>
+          <li
+            class="p-2 hover:bg-gray-200 rounded-md transition-all duration-150 ease-in-out"
+          >
             <RouterLink to="/">Home</RouterLink>
           </li>
-          <li>
-            <RouterLink to="/sp-calendar">SPCalendar</RouterLink>
+          <li
+            class="p-2 hover:bg-gray-200 rounded-md transition-all duration-150 ease-in-out"
+          >
+            <RouterLink to="/home-2">Home 2</RouterLink>
           </li>
-          <li>
+          <li
+            class="p-2 hover:bg-gray-200 rounded-md transition-all duration-150 ease-in-out"
+          >
             <RouterLink to="/author">Thanks to</RouterLink>
           </li>
         </ul>
