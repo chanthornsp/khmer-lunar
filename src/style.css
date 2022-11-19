@@ -3,15 +3,6 @@
 @tailwind utilities;
 
 @layer utilities {
-  @import url("https://fonts.googleapis.com/css2?family=Hanuman:wght@100;300;400;700;900&family=Nokora:wght@100;300;400;700;900&display=swap");
-  .font-hanuman {
-    font-family: "Hanuman", Arial, serif;
-  }
-
-  .font-nokora {
-    font-family: "Nokora", Arial, sans-serif;
-  }
-
   .vc-weekday {
     @apply font-hanuman font-bold text-black text-lg border-b border-t mb-2;
   }

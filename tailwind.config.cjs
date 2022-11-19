@@ -5,7 +5,14 @@ module.exports = {
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily:{
+        hanuman:[ "Hanuman", "Arial", "serif"],
+        nokora:[ "Nokora", "Arial", "serif"],
+        moul:[ "Moul", "Arial Rounded Bold", "serif"],
+        moulpali:[ "Moulpali", "Arial", "serif"],
+      }
+    },
   },
   plugins: [],
 }

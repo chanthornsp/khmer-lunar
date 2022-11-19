@@ -7,7 +7,7 @@ import usePublicHolidays from "../Composables/usePublicHolidays.js";
 import TheHolidaysList from "../components/TheHolidaysList.vue";
 import useKhmerNewYearDate from "../Composables/useKhmerNewYearDate.js";
 
-const { khmerDate, khmerNewYearDate } = useKhmerDate();
+const { khmerDate } = useKhmerDate();
 const { events, traditional_events } = usePublicHolidays();
 const masks = ref({
   weekdays: "WWW",
@@ -106,7 +106,7 @@ const generateHolidaysFromCurrentMonth = (day) => {
         item.start_date.month === option.khmer_month &&
         item.start_date.day === option.khmer_day
     );
-    if (!!filteredHolidays.length) {
+    if (filteredHolidays.length) {
       filteredHolidays.forEach((element) => {
         attrs.value.push({
           key: "traditional_events" + option.date,
@@ -128,9 +128,9 @@ const generateHolidaysFromCurrentMonth = (day) => {
 };
 const isHolidays = (attributes) => {
   let attrsObject = Object.assign([], attributes);
-  if (!!attrsObject.length) {
+  if (attrsObject.length) {
     if (
-      !!attrsObject.filter(
+      attrsObject.filter(
         (attr) => attr.customData.description === "Holiday in Cambodia"
       ).length
     ) {
@@ -175,7 +175,6 @@ const weeksToKh = () => {
         "border-top-right-radius: 0.375rem; " +
         "border-bottom-right-radius: 0.375rem ";
       text.innerText = "សៅរ៍";
-      
     }
   });
 };

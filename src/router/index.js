@@ -8,10 +8,16 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: Home,
-    },    {
+    },
+    {
       path: "/author",
       name: "author",
-      component: ()=>import('../Pages/Author.vue'),
+      component: () => import("../Pages/Author.vue"),
+    },
+    {
+      path: "/sp-calendar",
+      name: "sp-calendar",
+      component: () => import("../Pages/SPCalendar.vue"),
     },
   ],
 });

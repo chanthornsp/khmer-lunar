@@ -10,6 +10,7 @@
 	},
 	"dependencies": {
 		"@thyrith/momentkh": "github:ChanthornAcademy/momentkh#main",
+		"eslint": "8.22.0",
 		"moment": "^2.29.4",
 		"v-calendar": "^3.0.0-alpha.8",
 		"vue": "^3.2.37",
@@ -21,7 +22,6 @@
 		"@volar-plugins/vetur": "latest",
 		"@vue/eslint-config-prettier": "^7.0.0",
 		"autoprefixer": "^10.4.12",
-		"eslint": "^8.22.0",
 		"eslint-plugin-vue": "^9.3.0",
 		"postcss": "^8.4.18",
 		"prettier": "^2.7.1",

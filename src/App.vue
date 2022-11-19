@@ -21,6 +21,9 @@ import { RouterLink, RouterView } from "vue-router";
             <RouterLink to="/">Home</RouterLink>
           </li>
           <li>
+            <RouterLink to="/sp-calendar">SPCalendar</RouterLink>
+          </li>
+          <li>
             <RouterLink to="/author">Thanks to</RouterLink>
           </li>
         </ul>
