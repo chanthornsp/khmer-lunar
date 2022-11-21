@@ -9,6 +9,7 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@heroicons/vue": "^2.0.13",
 		"@thyrith/momentkh": "github:ChanthornAcademy/momentkh#main",
 		"eslint": "8.22.0",
 		"moment": "^2.29.4",

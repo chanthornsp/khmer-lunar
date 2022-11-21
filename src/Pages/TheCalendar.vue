@@ -1,6 +1,7 @@
 <script setup>
 import moment from "moment/min/moment-with-locales";
 import { computed, onMounted, ref, watch } from "vue";
+import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/vue/24/solid";
 import useKhmerDate from "../Composables/useKhmerDate.js";
 
 const props = defineProps({
@@ -15,6 +16,9 @@ const currentMonth = ref(moment().month() + 1);
 const currentYear = ref(moment().year());
 const initDate = computed(() =>
   moment(currentYear.value + "-" + currentMonth.value + "-" + "1", "YYYY-M-D")
+);
+const initKhDate = computed(() =>
+  khmerDate.value(initDate.value.clone()).toKhDate("ឆ្នាំa_e_ព.ស b").split("_")
 );
 
 const onPrev = () => {
@@ -35,24 +39,34 @@ const onNext = () => {
   emit("onNext", { month: currentMonth.value, year: currentYear.value });
   emit("onUpdatePage", { month: currentMonth.value, year: currentYear.value });
 };
+
+const reset = () => {
+  currentMonth.value = moment().month() + 1;
+  currentYear.value = moment().year();
+};
+
 watch(initDate, () => {
   // reset days
   days.value.length = 0;
   init();
 });
 onMounted(() => {
-  emit("onPrev", { month: currentMonth.value, year: currentYear.value });
-  emit("onNext", { month: currentMonth.value, year: currentYear.value });
-  emit("onUpdatePage", { month: currentMonth.value, year: currentYear.value });
   // reset days
   days.value.length = 0;
   init();
 });
 const init = () => {
+  //emit events
+  emit("onPrev", { month: currentMonth.value, year: currentYear.value });
+  emit("onNext", { month: currentMonth.value, year: currentYear.value });
+  emit("onUpdatePage", { month: currentMonth.value, year: currentYear.value });
   // generate days of the week Sun-Sat
   daysOfWeek.value.length = 0;
   for (let w = 0; w < 7; w++) {
-    daysOfWeek.value.push(moment().locale("km").day(w).format("dddd"));
+    daysOfWeek.value.push({
+      // en: moment().day(w),
+      km: moment().locale("km").day(w),
+    });
   }
   // generate full calendar
   let date = initDate.value;
@@ -139,10 +153,18 @@ const isHolidays = (attributes) => {
     <div class="font-nokora w-full bg-white border mx-auto p-2 rounded-xl">
       <!--Header calendar-->
       <div class="items-center justify-between flex mb-4">
-        <div>
-          <button type="button" @click.prevent="onPrev">Prev.</button>
+        <div class="shrink-0 text-right text-lg font-bold">
+          <div>
+            {{ initKhDate[0] }}
+          </div>
+          <div>
+            {{ initKhDate[1] }}
+          </div>
+          <div>
+            {{ initKhDate[2] }}
+          </div>
         </div>
-        <div class="text-center">
+        <div class="text-center w-full">
           <h2 class="text-lg md:text-xl lg:text-2xl font-bold">
             {{ currentKhmerMonths }}
           </h2>
@@ -150,8 +172,26 @@ const isHolidays = (attributes) => {
             {{ initDate.format("MMMM, YYYY") }}
           </h2>
         </div>
-        <div>
-          <button type="button" @click.prevent="onNext">Next</button>
+        <div class="flex gap-1 items-center justify-between shrink-0">
+          <button
+            type="button"
+            class="rounded-md hover:bg-gray-200 p-2"
+            @click.prevent="onPrev"
+          >
+            <ChevronLeftIcon class="w-5 h-5" />
+          </button>
+          <button
+            type="button"
+            class="rounded-full w-3 h-3 bg-gray-200 hover:bg-gray-300"
+            @click.prevent="reset"
+          ></button>
+          <button
+            type="button"
+            class="rounded-md hover:bg-gray-200 p-2"
+            @click.prevent="onNext"
+          >
+            <ChevronRightIcon class="w-5 h-5" />
+          </button>
         </div>
       </div>
       <!--Week Day-->
@@ -159,10 +199,8 @@ const isHolidays = (attributes) => {
         class="flex gap-2 justify-between text-center items-center mb-2 bg-white rounded-md border overflow-hidden font-bold text-lg"
       >
         <template v-for="(week, key) in daysOfWeek" :key="week">
-          <div
-            :class="[key === 0 ? 'bg-red-600 text-white' : '', 'w-full py-3']"
-          >
-            {{ week }}
+          <div :class="[key === 0 ? 'text-red-600' : '', 'w-full py-3']">
+            <div>{{ week.km.format("dddd") }}</div>
           </div>
         </template>
       </div>
@@ -177,6 +215,7 @@ const isHolidays = (attributes) => {
                 : 'bg-white',
               isHolidays(day.attributes),
               day.date.weekday() === 0 ? 'text-red-600' : '',
+              moment().isSame(day.date, 'day') ? 'bg-blue-600 text-white' : '',
             ]"
           >
             <div
