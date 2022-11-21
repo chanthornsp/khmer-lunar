@@ -3,6 +3,7 @@ import moment from "moment/min/moment-with-locales";
 import { computed, onMounted, ref, watch } from "vue";
 import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/vue/24/solid";
 import useKhmerDate from "../Composables/useKhmerDate.js";
+import { debounce } from "lodash";
 
 const props = defineProps({
   attributes: Object,
@@ -17,9 +18,7 @@ const currentYear = ref(moment().year());
 const initDate = computed(() =>
   moment(currentYear.value + "-" + currentMonth.value + "-" + "1", "YYYY-M-D")
 );
-const initKhDate = computed(() =>
-  khmerDate.value(initDate.value.clone()).toKhDate("ឆ្នាំa_e_ព.ស b").split("_")
-);
+const initKhDate = ref([]);
 
 const onPrev = () => {
   currentMonth.value--;
@@ -49,15 +48,26 @@ const onClick = (date) => {
   emit("onClick", date);
 };
 
-watch(initDate, () => {
-  // reset days
-  days.value.length = 0;
-  init();
-});
+watch(
+  initDate,
+  debounce(() => {
+    // reset days
+    days.value.length = 0;
+    init();
+    initKhDate.value = khmerDate
+      .value(initDate.value.clone())
+      .toKhDate("ឆ្នាំa_e_ព.ស b")
+      .split("_");
+  }, 300)
+);
 onMounted(() => {
   // reset days
   days.value.length = 0;
   init();
+  initKhDate.value = khmerDate
+    .value(initDate.value.clone())
+    .toKhDate("ឆ្នាំa_e_ព.ស b")
+    .split("_");
 });
 const init = () => {
   //emit events

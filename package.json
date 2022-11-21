@@ -12,6 +12,7 @@
 		"@heroicons/vue": "^2.0.13",
 		"@thyrith/momentkh": "github:ChanthornAcademy/momentkh#main",
 		"eslint": "8.22.0",
+		"lodash": "^4.17.21",
 		"moment": "^2.29.4",
 		"vue": "^3.2.37",
 		"vue-router": "^4.1.6"
