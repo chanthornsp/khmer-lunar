@@ -12,7 +12,6 @@
 		"@thyrith/momentkh": "github:ChanthornAcademy/momentkh#main",
 		"eslint": "8.22.0",
 		"moment": "^2.29.4",
-		"v-calendar": "^3.0.0-alpha.8",
 		"vue": "^3.2.37",
 		"vue-router": "^4.1.6"
 	},

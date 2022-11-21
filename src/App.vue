@@ -27,11 +27,6 @@ import { RouterLink, RouterView } from "vue-router";
           <li
             class="p-2 hover:bg-gray-200 rounded-md transition-all duration-150 ease-in-out"
           >
-            <RouterLink to="/home-2">Home 2</RouterLink>
-          </li>
-          <li
-            class="p-2 hover:bg-gray-200 rounded-md transition-all duration-150 ease-in-out"
-          >
             <RouterLink to="/author">Thanks to</RouterLink>
           </li>
         </ul>

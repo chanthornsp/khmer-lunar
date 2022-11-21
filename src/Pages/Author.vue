@@ -39,31 +39,6 @@
             <div class="flex-shrink-0">
               <div class="w-10 h-10">
                 <img
-                  src="https://vcalendar.io/hero.png"
-                  alt="vcalendar"
-                  class="object-contain w-full h-full"
-                />
-              </div>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-gray-900 truncate">
-                V-Calendar
-              </p>
-              <a
-                href="https://vcalendar.io/"
-                target="_blank"
-                class="text-sm text-gray-500 truncate"
-              >
-                https://vcalendar.io/
-              </a>
-            </div>
-          </div>
-        </li>
-        <li class="py-3 sm:py-4">
-          <div class="flex items-center space-x-4">
-            <div class="flex-shrink-0">
-              <div class="w-10 h-10">
-                <img
                   src="https://avatars.githubusercontent.com/u/67109815?s=200&v=4"
                   alt="Tailwind CSS"
                   class="object-contain w-full h-full"
