@@ -8,7 +8,7 @@ const props = defineProps({
   attributes: Object,
   currentKhmerMonths: String,
 });
-const emit = defineEmits(["onPrev", "onNext", "onUpdatePage"]);
+const emit = defineEmits(["onPrev", "onNext", "onUpdatePage", "onClick"]);
 const { khmerDate } = useKhmerDate();
 const daysOfWeek = ref([]);
 const days = ref([]);
@@ -43,6 +43,10 @@ const onNext = () => {
 const reset = () => {
   currentMonth.value = moment().month() + 1;
   currentYear.value = moment().year();
+};
+
+const onClick = (date) => {
+  emit("onClick", date);
 };
 
 watch(initDate, () => {
@@ -208,7 +212,8 @@ const isHolidays = (attributes) => {
       <div class="grid gap-2 grid-cols-7">
         <template v-for="day in days" :key="day">
           <div
-            class="w-full aspect-[10/8] shadow rounded-md border md:p-2"
+            @click.prevent="onClick(day.date)"
+            class="w-full aspect-[10/8] shadow rounded-md border md:p-2 whitespace-nowrap cursor-pointer transform duration-150 hover:scale-105 ease-in-out"
             :class="[
               day.prevMonth || day.nextMonth
                 ? 'opacity-20 bg-gray-100'
