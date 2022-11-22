@@ -78,8 +78,8 @@ const init = () => {
   daysOfWeek.value.length = 0;
   for (let w = 0; w < 7; w++) {
     daysOfWeek.value.push({
-      // en: moment().day(w),
-      km: moment().locale("km").day(w),
+      en: moment().day(w),
+      km: moment().clone().locale("km").day(w),
     });
   }
   // generate full calendar
@@ -159,6 +159,25 @@ const isHolidays = (attributes) => {
   } else {
     return "bg-white";
   }
+};
+
+const getBuddhistHolyDay = (khDate, date) => {
+  console.log();
+  if (
+    khDate === "៨រោច" ||
+    khDate === "៨កើត" ||
+    khDate === "១៥កើត" ||
+    khDate === "១៥រោច"
+  ) {
+    return true;
+  } else if (
+    khDate === "១៤រោច" &&
+    khmerDate.value(date.clone().add(1, "days")).toKhDate("dN") === "១កើត"
+  ) {
+    return true;
+  }
+
+  return false;
 };
 </script>
 
@@ -243,7 +262,13 @@ const isHolidays = (attributes) => {
                 class="w-full flex justify-center flex-col md:justify-start items-center md:items-end font-nokora text-sm md:text-base text-center"
               >
                 <div>
-                  {{ day.khDate.toKhDate("d N") }}
+                  {{ day.khDate.toKhDate("dN") }}
+                </div>
+                <div
+                  v-if="getBuddhistHolyDay(day.khDate.toKhDate('dN'), day.date)"
+                  class="text-red-600 text-xs"
+                >
+                  ថ្ងៃសីល
                 </div>
               </div>
             </div>
