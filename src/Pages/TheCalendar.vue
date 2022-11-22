@@ -165,7 +165,11 @@ const isHolidays = (attributes) => {
       ).length
     ) {
       return "text-red-600 bg-red-100";
-    } else {
+    } else if (
+      attrsObject.filter(
+        (attr) => attr.customData.description === "General Event"
+      ).length
+    ) {
       return "text-blue-600 bg-blue-100";
     }
   } else {
