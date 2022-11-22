@@ -54,20 +54,12 @@ watch(
     // reset days
     days.value.length = 0;
     init();
-    initKhDate.value = khmerDate
-      .value(initDate.value.clone())
-      .toKhDate("ឆ្នាំa_e_ព.ស b")
-      .split("_");
-  }, 300)
+  }, 100)
 );
 onMounted(() => {
   // reset days
   days.value.length = 0;
   init();
-  initKhDate.value = khmerDate
-    .value(initDate.value.clone())
-    .toKhDate("ឆ្នាំa_e_ព.ស b")
-    .split("_");
 });
 const init = () => {
   //emit events
@@ -138,6 +130,26 @@ const init = () => {
       attributes: attrsFilter(nextDate),
     });
   }
+  getBeYear();
+};
+const getBeYear = () => {
+  let beYear;
+  if (initDate.value.clone().month() + 1 === 4) {
+    beYear = initDate.value
+      .clone()
+      .add(543, "years")
+      .locale("km")
+      .format("YYYY");
+  } else {
+    beYear = initDate.value
+      .clone()
+      .add(544, "years")
+      .locale("km")
+      .format("YYYY");
+  }
+  initKhDate.value = (
+    khmerDate.value(initDate.value.clone()).toKhDate("ឆ្នាំa_e_ព.ស") + beYear
+  ).split("_");
 };
 
 const attrsFilter = (dates) => {
@@ -162,7 +174,6 @@ const isHolidays = (attributes) => {
 };
 
 const getBuddhistHolyDay = (khDate, date) => {
-  console.log();
   if (
     khDate === "៨រោច" ||
     khDate === "៨កើត" ||
@@ -268,7 +279,11 @@ const getBuddhistHolyDay = (khDate, date) => {
                   v-if="getBuddhistHolyDay(day.khDate.toKhDate('dN'), day.date)"
                   class="text-red-600 text-xs"
                 >
-                  ថ្ងៃសីល
+                  <img
+                    src="../assets/buddhist-icon.webp"
+                    alt="Buddhist"
+                    class="w-3 md:w-4 lg:w-6 h-auto"
+                  />
                 </div>
               </div>
             </div>

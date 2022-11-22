@@ -14,7 +14,12 @@ defineProps({
     </h2>
     <ol class="relative border-l border-gray-200 font-nokora">
       <template v-for="(holiday, index) in events" :key="index">
-        <template v-if="holiday.customData.title.en !== 'today'">
+        <template
+          v-if="
+            holiday.customData.title.en !== 'today' &&
+            holiday.customData.title.en !== 'Holy Day'
+          "
+        >
           <li
             class="ml-4 mt-4 cursor-pointer"
             :class="[

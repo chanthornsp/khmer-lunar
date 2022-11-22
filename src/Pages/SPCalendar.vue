@@ -24,7 +24,7 @@ const attrs = ref([
   },
 ]);
 const khmerDaysInMonth = ref([]);
-const khmerMonthInCurrentMonth = ref([1, 2]);
+const khmerMonthInCurrentMonth = ref([]);
 const currentMonthYear = ref({});
 const detail = ref({});
 const openModal = ref(false);
@@ -34,6 +34,7 @@ const onUpdatePage = (day) => {
   //reset khmerDaysInMonth
   khmerDaysInMonth.value.length = 0;
   attrs.value.length = 0;
+  khmerMonthInCurrentMonth.value.length = 0;
   // General date events
   generateHolidaysFromCurrentMonth(day);
   // sorting by date
@@ -89,50 +90,63 @@ const generateHolidaysFromCurrentMonth = (day) => {
       y: day.year,
       M: day.month - 1,
       D: i,
-    }).format("YYYY-MM-DD");
-    let lurna = khmerDate.value(date);
-    khmerDaysInMonth.value.push({
-      khmer_month: lurna.toKhDate("m"),
-      khmer_day: lurna.toKhDate("dN"),
-      date: date,
     });
-    //filter traditional events
-    traditional_events.value.filter((item) =>
-      khmerDaysInMonth.value
-        .filter(
-          (item2) =>
-            item2.khmer_month === item.start_date.month &&
-            item2.khmer_day === item.start_date.day
-        )
-        .includes(item)
-    );
-  }
-
-  khmerDaysInMonth.value.reduce(function (filtered, option) {
-    let filteredHolidays = traditional_events.value.filter(
-      (item) =>
-        item.start_date.month === option.khmer_month &&
-        item.start_date.day === option.khmer_day
-    );
-    if (filteredHolidays.length) {
-      filteredHolidays.forEach((element) => {
+    let lurna = [...khmerDate.value(date).toKhDate("dN_m").split("_")];
+    khmerMonthInCurrentMonth.value.push(lurna[1]);
+    // console.log(lurna)
+    traditional_events.value
+      .filter(
+        (item) =>
+          item.start_date.day === lurna[0] && item.start_date.month === lurna[1]
+      )
+      .forEach((element) => {
         attrs.value.push({
-          key: "traditional_events" + option.date,
+          key: "traditional_events" + date,
           customData: {
             title: element.summary,
             description: element.description,
             class: "bg-red-600 text-white",
           },
-          dates: option.date,
+          dates: date,
         });
       });
+    if (getBuddhistHolyDay(lurna[0], date)) {
+      attrs.value.push({
+        key: "holy-day" + date,
+        customData: {
+          title: {
+            kh: "ថ្ងៃ​សីល",
+            en: "Holy Day",
+          },
+          description: "Buddhist Holy Day",
+          class: "text-yellow-600",
+        },
+        dates: date,
+      });
     }
-  });
-
+  }
   //get two Khmer months =  កក្ដិក - មិគសិរ
   khmerMonthInCurrentMonth.value = [
-    ...new Set(khmerDaysInMonth.value.map((item) => item.khmer_month)),
+    ...new Set(khmerMonthInCurrentMonth.value.map((item) => item)),
   ];
+};
+
+const getBuddhistHolyDay = (khDate, date) => {
+  if (
+    khDate === "៨រោច" ||
+    khDate === "៨កើត" ||
+    khDate === "១៥កើត" ||
+    khDate === "១៥រោច"
+  ) {
+    return true;
+  } else if (
+    khDate === "១៤រោច" &&
+    khmerDate.value(date.clone().add(1, "days")).toKhDate("dN") === "១កើត"
+  ) {
+    return true;
+  }
+
+  return false;
 };
 </script>
 
