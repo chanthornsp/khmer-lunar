@@ -24,7 +24,6 @@ const attrs = ref([
   },
 ]);
 const khmerDaysInMonth = ref([]);
-const khmerMonthInCurrentMonth = ref([]);
 const currentMonthYear = ref({});
 const detail = ref({});
 const openModal = ref(false);
@@ -34,7 +33,7 @@ const onUpdatePage = (day) => {
   //reset khmerDaysInMonth
   khmerDaysInMonth.value.length = 0;
   attrs.value.length = 0;
-  khmerMonthInCurrentMonth.value.length = 0;
+
   // General date events
   generateHolidaysFromCurrentMonth(day);
   // sorting by date
@@ -92,7 +91,6 @@ const generateHolidaysFromCurrentMonth = (day) => {
       D: i,
     });
     let lurna = [...khmerDate.value(date).toKhDate("dN_m").split("_")];
-    khmerMonthInCurrentMonth.value.push(lurna[1]);
     // console.log(lurna)
     traditional_events.value
       .filter(
@@ -125,10 +123,6 @@ const generateHolidaysFromCurrentMonth = (day) => {
       });
     }
   }
-  //get two Khmer months =  កក្ដិក - មិគសិរ
-  khmerMonthInCurrentMonth.value = [
-    ...new Set(khmerMonthInCurrentMonth.value.map((item) => item)),
-  ];
 };
 
 const getBuddhistHolyDay = (khDate, date) => {
@@ -157,9 +151,6 @@ const getBuddhistHolyDay = (khDate, date) => {
         :attributes="attrs"
         @onUpdatePage="onUpdatePage"
         @onClick="onClick"
-        :current-khmer-months="
-          khmerMonthInCurrentMonth[0] + ' ~ ' + khmerMonthInCurrentMonth[1]
-        "
       />
     </div>
     <div class="w-full">

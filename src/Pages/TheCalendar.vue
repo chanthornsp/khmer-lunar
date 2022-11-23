@@ -7,7 +7,6 @@ import { debounce } from "lodash";
 
 const props = defineProps({
   attributes: Object,
-  currentKhmerMonths: String,
 });
 const emit = defineEmits(["onPrev", "onNext", "onUpdatePage", "onClick"]);
 const { khmerDate } = useKhmerDate();
@@ -15,6 +14,7 @@ const daysOfWeek = ref([]);
 const days = ref([]);
 const currentMonth = ref(moment().month() + 1);
 const currentYear = ref(moment().year());
+const currentKhmerMonths = ref([]);
 const initDate = computed(() =>
   moment(currentYear.value + "-" + currentMonth.value + "-" + "1", "YYYY-M-D")
 );
@@ -68,6 +68,7 @@ const init = () => {
   emit("onUpdatePage", { month: currentMonth.value, year: currentYear.value });
   // generate days of the week Sun-Sat
   daysOfWeek.value.length = 0;
+  currentKhmerMonths.value.length = 0;
   for (let w = 0; w < 7; w++) {
     daysOfWeek.value.push({
       en: moment().day(w),
@@ -103,14 +104,16 @@ const init = () => {
   //current days in month
   for (let i = 1; i <= currentDaysInMonth; i++) {
     let currentDate = moment(date.format("YYYY-MM-" + i), "YYYY-MM-D");
+    let khmerLurnaDate = khmerDate.value(currentDate);
     days.value.push({
       prevMonth: false,
       day: i,
       date: currentDate,
-      khDate: khmerDate.value(currentDate),
+      khDate: khmerLurnaDate,
       nextMonth: false,
       attributes: attrsFilter(currentDate),
     });
+    currentKhmerMonths.value.push(khmerLurnaDate.toKhDate("m"));
   }
   //next days in month
   for (let Y = 1; Y <= nextDay; Y++) {
@@ -131,6 +134,10 @@ const init = () => {
     });
   }
   getBeYear();
+  //get two Khmer months =  កក្ដិក - មិគសិរ
+  currentKhmerMonths.value = [
+    ...new Set(currentKhmerMonths.value.map((item) => item)),
+  ];
 };
 const getBeYear = () => {
   let beYear;
@@ -214,7 +221,7 @@ const getBuddhistHolyDay = (khDate, date) => {
         </div>
         <div class="text-center w-full">
           <h2 class="text-lg md:text-xl lg:text-2xl font-bold">
-            {{ currentKhmerMonths }}
+            {{ currentKhmerMonths.toString() }}
           </h2>
           <h2 class="text-lg md:text-xl text-gray-600 font-bold">
             {{ initDate.format("MMMM, YYYY") }}
@@ -244,10 +251,12 @@ const getBuddhistHolyDay = (khDate, date) => {
       </div>
       <!--Week Day-->
       <div
-        class="flex gap-2 justify-between text-center items-center mb-2 bg-white rounded-md border overflow-hidden font-bold text-lg"
+        class="flex gap-2 justify-between text-center items-center mb-2 bg-white rounded-md border overflow-hidden font-bold text-base md:text-lg whitespace-nowrap"
       >
         <template v-for="(week, key) in daysOfWeek" :key="week">
-          <div :class="[key === 0 ? 'text-red-600' : '', 'w-full py-3']">
+          <div
+            :class="[key === 0 ? 'text-red-600' : '', 'w-full py-2 md:py-3']"
+          >
             <div>{{ week.km.format("dddd") }}</div>
           </div>
         </template>
@@ -257,7 +266,7 @@ const getBuddhistHolyDay = (khDate, date) => {
         <template v-for="day in days" :key="day">
           <div
             @click.prevent="onClick(day.date)"
-            class="w-full aspect-[10/8] shadow rounded-md border md:p-2 whitespace-nowrap cursor-pointer transform duration-150 hover:scale-105 ease-in-out"
+            class="w-full aspect-[10/8] relative shadow rounded-md border md:p-2 whitespace-nowrap cursor-pointer transform duration-150 hover:scale-105 ease-in-out"
             :class="[
               day.prevMonth || day.nextMonth
                 ? 'opacity-20 bg-gray-100'
@@ -281,12 +290,12 @@ const getBuddhistHolyDay = (khDate, date) => {
                 </div>
                 <div
                   v-if="getBuddhistHolyDay(day.khDate.toKhDate('dN'), day.date)"
-                  class="text-red-600 text-xs"
+                  class="absolute inset-0 rounded-md overflow-hidden flex justify-center z-10 opacity-30 lg:static lg:opacity-100 p-1"
                 >
                   <img
                     src="../assets/buddhist-icon.webp"
                     alt="Buddhist"
-                    class="w-3 md:w-4 lg:w-6 h-auto"
+                    class="h-full object-cover object-top lg:w-6 lg:h-auto lg:object-contain"
                   />
                 </div>
               </div>
@@ -296,7 +305,7 @@ const getBuddhistHolyDay = (khDate, date) => {
                 (day.khDate.khDay() === 0 || day.day === 1) &&
                 day.nextMonth === false
               "
-              class="text-blue-600 hidden md:block"
+              class="text-blue-600 font-bold hidden md:block"
             >
               {{ day.khDate.toKhDate("m") }}
             </div>
