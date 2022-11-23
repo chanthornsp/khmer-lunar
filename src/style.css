@@ -10,4 +10,112 @@
   .vc-weekday:first-child {
     @apply border-l rounded-l-md;
   }
+
+  /* Base table */
+  .base-table {
+    @apply rounded-xl border-separate border-spacing-y-2;
+    /*border-spacing: 0 5px;*/
+    /*border-collapse: separate;*/
+  }
+
+  .base-table thead tr {
+    @apply border-b bg-primary text-white dark:bg-darkPrimary;
+  }
+
+  .base-table tr td,
+  .base-table tr th {
+    @apply p-1 px-2;
+  }
+
+  .base-table tr td {
+    @apply bg-white dark:bg-slate-500/75;
+  }
+
+  .base-table tr td:first-child,
+  .base-table tr th:first-child {
+    @apply rounded-l-xl;
+  }
+
+  .base-table tr td:last-child,
+  .base-table tr th:last-child {
+    @apply rounded-r-xl;
+  }
+
+  .base-table .head-row td {
+    @apply bg-gray-200 drop-shadow-sm;
+  }
+
+  .base-table .danger td {
+    @apply bg-red-100 text-red-800;
+  }
+
+  .base-table2 thead tr td,
+  .base-table2 thead tr th {
+    @apply bg-white  p-2 border-b border-slate-200  border-t-0 border border-slate-200;
+  }
+
+  .base-table2 thead tr:first-child td:first-child,
+  .base-table2 thead tr:first-child th:first-child {
+    @apply rounded-tl-2xl overflow-hidden border-l-0;
+  }
+
+  .base-table2 thead tr:first-child td:last-child,
+  .base-table2 thead tr:first-child th:last-child {
+    @apply rounded-tr-2xl overflow-hidden border-r-0;
+  }
+
+  .base-table2 tbody tr td,
+  .base-table2 tbody tr th {
+    @apply bg-gray-100 p-2  border-b border-slate-200;
+  }
+
+  .base-table2 tbody tr:hover td,
+  .base-table2 tbody tr:hover th {
+    @apply bg-gray-200 p-2;
+  }
+
+  .base-table2 tbody tr:last-child td:first-child,
+  .base-table2 tbody tr:last-child th:first-child {
+    @apply rounded-bl-2xl overflow-hidden;
+  }
+
+  .base-table2 tbody tr:last-child td:last-child,
+  .base-table2 tbody tr:last-child th:last-child {
+    @apply rounded-br-2xl overflow-hidden;
+  }
+
+  .row-danger td,
+  .row-danger th {
+    @apply !bg-red-100 !text-red-600 dark:!bg-red-800 dark:!text-red-200;
+  }
+
+  .row-success td,
+  .row-success th {
+    @apply !bg-green-100 !text-green-600;
+  }
+
+  .row-warning td,
+  .row-warning th {
+    @apply !bg-yellow-100 !text-yellow-600 dark:!bg-yellow-800 dark:!text-yellow-200;
+  }
+
+  .row-danger:hover td,
+  .row-danger:hover th {
+    @apply opacity-80;
+  }
+
+  .row-success:hover td,
+  .row-success:hover th {
+    @apply opacity-80;
+  }
+
+  .row-warning:hover td,
+  .row-warning:hover th {
+    @apply opacity-80;
+  }
+
+  /*.base-table2 tbody tr td:first-child,*/
+  /*.base-table2 tbody tr th:first-child {*/
+  /*    @apply border-l-primary border-l-4 ;*/
+  /*}*/
 }

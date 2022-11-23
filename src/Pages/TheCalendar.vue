@@ -141,7 +141,7 @@ const init = () => {
 };
 const getBeYear = () => {
   let beYear;
-  if (initDate.value.clone().month() + 1 === 4) {
+  if (initDate.value.clone().month() + 1 <= 4) {
     beYear = initDate.value
       .clone()
       .add(543, "years")

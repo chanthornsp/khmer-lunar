@@ -16,6 +16,11 @@ const router = createRouter({
       component: () => import("../Pages/SPCalendar.vue"),
     },
     {
+      path: "/table",
+      name: "table",
+      component: () => import("../Pages/KhmerLurnaTable.vue"),
+    },
+    {
       path: "/author",
       name: "author",
       component: () => import("../Pages/Author.vue"),
