@@ -8,9 +8,6 @@ import useKhmerNewYearDate from "../Composables/useKhmerNewYearDate.js";
 
 const { khmerDate } = useKhmerDate();
 const { events, traditional_events } = usePublicHolidays();
-const masks = ref({
-  weekdays: "WWW",
-});
 const attrs = ref([
   {
     key: 1,
