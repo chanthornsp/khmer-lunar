@@ -1,12 +1,13 @@
 <script setup>
 import TheCalendar from "./TheCalendar.vue";
 import TheHolidaysList from "../components/TheHolidaysList.vue";
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import moment from "moment/min/moment-with-locales";
 import useKhmerNewYearDate from "../Composables/useKhmerNewYearDate.js";
 import useKhmerDate from "../Composables/useKhmerDate.js";
 import usePublicHolidays from "../Composables/usePublicHolidays.js";
 import { XMarkIcon } from "@heroicons/vue/24/solid";
+import throttle from "lodash/throttle";
 
 const { khmerDate } = useKhmerDate();
 const { events, traditional_events } = usePublicHolidays();
@@ -23,24 +24,26 @@ const attrs = ref([
     dates: moment().format(),
   },
 ]);
-const khmerDaysInMonth = ref([]);
 const currentMonthYear = ref({});
 const detail = ref({});
 const openModal = ref(false);
+const dayMonth = ref({
+  month: null,
+  year: null,
+});
 const onUpdatePage = (day) => {
   currentMonthYear.value = { m: day.month, y: day.year };
-
-  //reset khmerDaysInMonth
-  khmerDaysInMonth.value.length = 0;
-  attrs.value.length = 0;
-
-  // General date events
+  dayMonth.value = day;
   generateHolidaysFromCurrentMonth(day);
-  // sorting by date
-  attrs.value.sort(function (x, y) {
-    return new Date(x.dates) - new Date(y.dates);
-  });
 };
+
+watch(
+  dayMonth,
+  throttle(() => {
+    attrs.value.length = 0;
+    generateHolidaysFromCurrentMonth(dayMonth.value);
+  }, 0)
+);
 
 const onClick = (date) => {
   openModal.value = true;
@@ -105,7 +108,7 @@ const generateHolidaysFromCurrentMonth = (day) => {
             description: element.description,
             class: "bg-red-600 text-white",
           },
-          dates: date,
+          dates: date.format("YYYY-MM-DD"),
         });
       });
     if (getBuddhistHolyDay(lurna[0], date)) {
@@ -119,10 +122,13 @@ const generateHolidaysFromCurrentMonth = (day) => {
           description: "Buddhist Holy Day",
           class: "text-yellow-600",
         },
-        dates: date,
+        dates: date.format("YYYY-MM-DD"),
       });
     }
   }
+  attrs.value.sort(function (x, y) {
+    return new Date(x.dates) - new Date(y.dates);
+  });
 };
 
 const getBuddhistHolyDay = (khDate, date) => {
@@ -135,11 +141,10 @@ const getBuddhistHolyDay = (khDate, date) => {
     return true;
   } else if (
     khDate === "១៤រោច" &&
-    khmerDate.value(date.clone().add(1, "days")).toKhDate("dN") === "១កើត"
+    khmerDate.value(date.clone().add(1, "days")).toKhDate("dN") !== "១៥រោច"
   ) {
     return true;
   }
-
   return false;
 };
 </script>
@@ -194,8 +199,8 @@ const getBuddhistHolyDay = (khDate, date) => {
       >
         <template v-if="detail.date">
           <h4 class="text-lg md:text-xl lg:text-2xl font-bold">
-            {{ detail.date.clone().locale("km").format("LL") }},
-            {{ detail.date.clone().format("LL") }}
+            {{ detail.date.clone().format("LL") }},
+            {{ detail.date.clone().locale("en").format("LL") }}
           </h4>
           <p class="mt-4">
             {{ khmerDate(detail.date).toLunarDate() }}

@@ -1,9 +1,15 @@
 <script setup>
-import moment from "moment/min/moment-with-locales";
+import moment from "moment";
+import "moment/locale/km";
+import { onMounted } from "vue";
 
 defineProps({
   events: Object,
   title: String,
+});
+
+onMounted(() => {
+
 });
 </script>
 

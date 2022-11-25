@@ -11,17 +11,14 @@ const dates = ref([]);
 const loaded = ref(false);
 onMounted(
   debounce(() => {
-    //  init full year dates
-    init().then(() => {
-      loaded.value = true;
-    });
     for (let x = 1900; x <= 2900; x++) {
       yearList.value.push(x);
     }
-  }, 200)
+    filterForm.value.year = currentYear.value;
+  }, 0)
 );
 const filterForm = ref({
-  year: currentYear.value,
+  year: null,
 });
 watch(
   filterForm.value,

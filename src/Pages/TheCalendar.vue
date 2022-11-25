@@ -1,5 +1,5 @@
 <script setup>
-import moment from "moment/min/moment-with-locales";
+import moment from "moment";
 import { computed, onMounted, ref, watch } from "vue";
 import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/vue/24/solid";
 import useKhmerDate from "../Composables/useKhmerDate.js";
@@ -16,7 +16,10 @@ const currentMonth = ref(moment().month() + 1);
 const currentYear = ref(moment().year());
 const currentKhmerMonths = ref([]);
 const initDate = computed(() =>
-  moment(currentYear.value + "-" + currentMonth.value + "-" + "1", "YYYY-M-D")
+  moment(
+    currentYear.value + "-" + currentMonth.value + "-" + "1",
+    "YYYY-M-D"
+  ).locale("en")
 );
 const initKhDate = ref([]);
 
@@ -48,14 +51,6 @@ const onClick = (date) => {
   emit("onClick", date);
 };
 
-watch(
-  initDate,
-  debounce(() => {
-    // reset days
-    days.value.length = 0;
-    init();
-  }, 100)
-);
 onMounted(() => {
   // reset days
   days.value.length = 0;
@@ -72,7 +67,7 @@ const init = () => {
   for (let w = 0; w < 7; w++) {
     daysOfWeek.value.push({
       en: moment().day(w),
-      km: moment().clone().locale("km").day(w),
+      km: moment().clone().day(w),
     });
   }
   // generate full calendar
@@ -201,10 +196,49 @@ const getBuddhistHolyDay = (khDate, date) => {
 
   return false;
 };
+
+const filterForm = ref({
+  month: currentMonth.value,
+  year: currentYear.value,
+});
+watch(filterForm.value, () => {
+  currentYear.value = filterForm.value.year;
+  currentMonth.value = filterForm.value.month;
+});
+watch(
+  initDate,
+  debounce(() => {
+    filterForm.value.year = currentYear.value;
+    filterForm.value.month = currentMonth.value;
+    // reset days
+    days.value.length = 0;
+    init();
+  }, 300)
+);
 </script>
 
 <template>
   <div class="p-5">
+    <div
+      class="mb-3 rounded-xl border p-2 flex gap-4 flex-col md:flex-row items-center justify-center text-lg font-hanuman"
+    >
+      <div>
+        <label>Month: </label>
+        <select v-model="filterForm.month" class="border rounded-md py-2 px-3">
+          <option v-for="month in 12" :key="month" :value="month">
+            {{ moment({ M: month - 1 }).format("MMMM") }}
+          </option>
+        </select>
+      </div>
+      <div>
+        <label>Year: </label>
+        <select v-model="filterForm.year" class="border rounded-md py-2 px-3">
+          <option v-for="(year, key) in 1000" :key="year" :value="1900 + key">
+            {{ 1900 + key }}
+          </option>
+        </select>
+      </div>
+    </div>
     <div class="font-nokora w-full bg-white border mx-auto p-2 rounded-xl">
       <!--Header calendar-->
       <div class="items-center justify-between flex mb-4">
@@ -272,7 +306,7 @@ const getBuddhistHolyDay = (khDate, date) => {
                 ? 'opacity-20 bg-gray-100'
                 : 'bg-white',
               isHolidays(day.attributes),
-              day.date.weekday() === 0 ? 'text-red-600' : '',
+              day.date.weekday() === 6 ? 'text-red-600' : '',
               moment().isSame(day.date, 'day') ? 'bg-blue-600 text-white' : '',
             ]"
           >
