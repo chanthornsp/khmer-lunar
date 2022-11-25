@@ -42,6 +42,13 @@ const onNext = () => {
   emit("onUpdatePage", { month: currentMonth.value, year: currentYear.value });
 };
 
+const onPrevYear = () => {
+  currentYear.value--;
+};
+const onNextYear = () => {
+  currentYear.value++;
+};
+
 const reset = () => {
   currentMonth.value = moment().month() + 1;
   currentYear.value = moment().year();
@@ -220,23 +227,51 @@ watch(
 <template>
   <div class="p-5">
     <div
-      class="mb-3 rounded-xl border p-2 flex gap-4 flex-col md:flex-row items-center justify-center text-lg font-hanuman"
+      class="mb-3 rounded-xl md:divide-x-4 border p-2 flex flex-col md:flex-row items-center justify-center text-lg font-hanuman"
     >
-      <div>
+      <div class="flex items-center gap-1 px-4">
         <label>Month: </label>
+        <button
+          @click.prevent="onPrev"
+          class="rounded-md hover:bg-gray-200 p-2"
+          type="button"
+        >
+          <ChevronLeftIcon class="w-5" />
+        </button>
         <select v-model="filterForm.month" class="border rounded-md py-2 px-3">
           <option v-for="month in 12" :key="month" :value="month">
             {{ moment({ M: month - 1 }).format("MMMM") }}
           </option>
         </select>
+        <button
+          @click.prevent="onNext"
+          class="rounded-md hover:bg-gray-200 p-2"
+          type="button"
+        >
+          <ChevronRightIcon class="w-5" />
+        </button>
       </div>
-      <div>
+      <div class="flex items-center gap-1 px-4">
         <label>Year: </label>
+        <button
+          @click.prevent="onPrevYear"
+          class="rounded-md hover:bg-gray-200 p-2"
+          type="button"
+        >
+          <ChevronLeftIcon class="w-5" />
+        </button>
         <select v-model="filterForm.year" class="border rounded-md py-2 px-3">
           <option v-for="(year, key) in 1000" :key="year" :value="1900 + key">
             {{ 1900 + key }}
           </option>
         </select>
+        <button
+          @click.prevent="onNextYear"
+          class="rounded-md hover:bg-gray-200 p-2"
+          type="button"
+        >
+          <ChevronRightIcon class="w-5" />
+        </button>
       </div>
     </div>
     <div class="font-nokora w-full bg-white border mx-auto p-2 rounded-xl">
