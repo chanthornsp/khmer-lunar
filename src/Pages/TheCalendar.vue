@@ -30,7 +30,11 @@ const onPrev = () => {
     currentYear.value--;
   }
   emit("onPrev", { month: currentMonth.value, year: currentYear.value });
-  emit("onUpdatePage", { month: currentMonth.value, year: currentYear.value });
+  emit("onUpdatePage", {
+    month: currentMonth.value,
+    year: currentYear.value,
+    days: days.value,
+  });
 };
 const onNext = () => {
   currentMonth.value++;
@@ -39,7 +43,11 @@ const onNext = () => {
     currentYear.value++;
   }
   emit("onNext", { month: currentMonth.value, year: currentYear.value });
-  emit("onUpdatePage", { month: currentMonth.value, year: currentYear.value });
+  emit("onUpdatePage", {
+    month: currentMonth.value,
+    year: currentYear.value,
+    days: days.value,
+  });
 };
 
 const onPrevYear = () => {
@@ -67,7 +75,11 @@ const init = () => {
   //emit events
   emit("onPrev", { month: currentMonth.value, year: currentYear.value });
   emit("onNext", { month: currentMonth.value, year: currentYear.value });
-  emit("onUpdatePage", { month: currentMonth.value, year: currentYear.value });
+  emit("onUpdatePage", {
+    month: currentMonth.value,
+    year: currentYear.value,
+    days: days.value,
+  });
   // generate days of the week Sun-Sat
   daysOfWeek.value.length = 0;
   currentKhmerMonths.value.length = 0;
