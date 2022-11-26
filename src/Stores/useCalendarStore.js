@@ -163,7 +163,6 @@ export const useCalendarStore = defineStore("calendar", {
           ),
         });
       }
-
       this.currentKhmerMonths = [
         ...new Set(currentKhMonth.map((item) => item)),
       ];
@@ -200,7 +199,7 @@ export const useCalendarStore = defineStore("calendar", {
               description: element.description,
               class: "bg-red-600 text-white",
             },
-            dates: dates.date.format("YYYY-MM-DD"),
+            dates: dates.date.locale("en").format("YYYY-MM-DD"),
           });
         });
       if (this.getBuddhistHolyDay(lurna[0], dates.date)) {
@@ -214,7 +213,7 @@ export const useCalendarStore = defineStore("calendar", {
             description: "Buddhist Holy Day",
             class: "text-yellow-600",
           },
-          dates: dates.date.format("YYYY-MM-DD"),
+          dates: dates.date.locale("en").format("YYYY-MM-DD"),
         });
       }
     },

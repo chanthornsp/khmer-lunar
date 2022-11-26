@@ -20,10 +20,6 @@ const onPrev = () => {
     month: calendarStore.currentMonth,
     year: calendarStore.currentYear,
   });
-  emit("onUpdatePage", {
-    month: calendarStore.currentMonth,
-    year: calendarStore.currentYear,
-  });
 };
 const onNext = () => {
   calendarStore.currentMonth++;
@@ -32,10 +28,6 @@ const onNext = () => {
     calendarStore.currentYear++;
   }
   emit("onNext", {
-    month: calendarStore.currentMonth,
-    year: calendarStore.currentYear,
-  });
-  emit("onUpdatePage", {
     month: calendarStore.currentMonth,
     year: calendarStore.currentYear,
   });
@@ -55,6 +47,10 @@ const reset = () => {
 
 const onClick = (date) => {
   emit("onClick", date);
+  emit("onUpdatePage", {
+    month: calendarStore.currentMonth,
+    year: calendarStore.currentYear,
+  });
 };
 
 onMounted(() => {
@@ -111,6 +107,10 @@ const filterForm = ref({
 watch(filterForm.value, () => {
   calendarStore.currentYear = filterForm.value.year;
   calendarStore.currentMonth = filterForm.value.month;
+  emit("onUpdatePage", {
+    month: calendarStore.currentMonth,
+    year: calendarStore.currentYear,
+  });
 });
 const initDates = computed(() => calendarStore.initDate);
 watch(initDates, () => {
@@ -235,9 +235,7 @@ watch(initDates, () => {
             @click.prevent="onClick(day.date)"
             class="w-full aspect-[10/8] relative shadow rounded-md border md:p-2 whitespace-nowrap cursor-pointer transform duration-150 hover:scale-105 ease-in-out"
             :class="[
-              day.prevMonth || day.nextMonth
-                ? 'opacity-20 bg-gray-100'
-                : 'bg-white',
+              day.prevMonth || day.nextMonth ? 'opacity-40' : '',
               isHolidays(day.attributes),
               day.date.weekday() === 6 ? 'text-red-600' : '',
               moment().isSame(day.date, 'day') ? 'bg-blue-600 text-white' : '',
