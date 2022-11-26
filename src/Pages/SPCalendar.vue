@@ -1,41 +1,19 @@
 <script setup>
-import TheCalendar from "./TheCalendar.vue";
+import TheCalendar from "./TheCalendar2.vue";
 import TheHolidaysList from "../components/TheHolidaysList.vue";
-import { onMounted, ref, watch } from "vue";
-import moment from "moment/min/moment-with-locales";
-import useKhmerNewYearDate from "../Composables/useKhmerNewYearDate.js";
+import { ref } from "vue";
+
 import useKhmerDate from "../Composables/useKhmerDate.js";
-import usePublicHolidays from "../Composables/usePublicHolidays.js";
 import { XMarkIcon } from "@heroicons/vue/24/solid";
-import throttle from "lodash/throttle";
 import { useAttributeStore } from "../Stores/useAttributeStore.js";
+import moment from "moment";
 
 const { khmerDate } = useKhmerDate();
-const { events, traditional_events } = usePublicHolidays();
-const attrs = ref([]);
 
 const attrStore = useAttributeStore();
-
-const currentMonthYear = ref({});
-const detail = ref({});
 const openModal = ref(false);
-const dayMonth = ref({
-  month: null,
-  year: null,
-});
-const onUpdatePage = (day) => {
-  currentMonthYear.value = { m: day.month, y: day.year };
-  dayMonth.value = day;
-  generateHolidaysFromCurrentMonth(day);
-};
-
-watch(
-  dayMonth,
-  throttle(() => {
-    attrStore.attrs.length = 0;
-    generateHolidaysFromCurrentMonth(dayMonth.value);
-  }, 0)
-);
+const detail = ref({});
+const monthYear = ref(moment());
 
 const onClick = (date) => {
   openModal.value = true;
@@ -46,100 +24,8 @@ const onClick = (date) => {
     ),
   };
 };
-
-const generateHolidaysFromCurrentMonth = (day) => {
-  //get khmer new year date
-  if (day.month === 4) {
-    const { khmerNewYearAttrs } = useKhmerNewYearDate(day);
-    attrStore.attrs.push(...khmerNewYearAttrs.value);
-  }
-  events.value
-    .filter((item) => item.start_date.month === day.month)
-    .forEach((element) => {
-      attrStore.attrs.push({
-        key:
-          "events" +
-          moment({
-            y: day.year,
-            M: day.month - 1,
-            D: element.start_date.day,
-          }).format("YYYY-MM-DD"),
-        customData: {
-          title: element.summary,
-          description: element.description,
-          class: "bg-red-600 text-white",
-        },
-        dates: moment({
-          y: day.year,
-          M: day.month - 1,
-          D: element.start_date.day,
-        }).format("YYYY-MM-DD"),
-      });
-    });
-
-  let daysInMonth = moment({
-    y: day.year,
-    M: day.month - 1,
-  }).daysInMonth();
-  for (let i = 1; i <= daysInMonth; i++) {
-    let date = moment({
-      y: day.year,
-      M: day.month - 1,
-      D: i,
-    });
-    let lurna = [...khmerDate.value(date).toKhDate("dN_m").split("_")];
-    // console.log(lurna)
-    traditional_events.value
-      .filter(
-        (item) =>
-          item.start_date.day === lurna[0] && item.start_date.month === lurna[1]
-      )
-      .forEach((element) => {
-        attrStore.attrs.push({
-          key: "traditional_events" + date,
-          customData: {
-            title: element.summary,
-            description: element.description,
-            class: "bg-red-600 text-white",
-          },
-          dates: date.format("YYYY-MM-DD"),
-        });
-      });
-    if (getBuddhistHolyDay(lurna[0], date)) {
-      attrStore.attrs.push({
-        key: "holy-day" + date,
-        customData: {
-          title: {
-            kh: "ថ្ងៃ​សីល",
-            en: "Holy Day",
-          },
-          description: "Buddhist Holy Day",
-          class: "text-yellow-600",
-        },
-        dates: date.format("YYYY-MM-DD"),
-      });
-    }
-  }
-  attrStore.attrs.sort(function (x, y) {
-    return new Date(x.dates) - new Date(y.dates);
-  });
-};
-
-const getBuddhistHolyDay = (khDate, date) => {
-  if (
-    khDate === "៨រោច" ||
-    khDate === "៨កើត" ||
-    khDate === "១៥កើត" ||
-    khDate === "១៥រោច"
-  ) {
-    return true;
-  } else if (
-    khDate === "១៤រោច" &&
-    khmerDate.value(date.clone().add(1, "days")).toKhDate("dN") !== "១៥រោច"
-  ) {
-    return true;
-  }
-  return false;
+const onUpdatePage = (dates) => {
+  monthYear.value = moment({ y: dates.year, M: dates.month - 1 });
 };
 </script>
 
@@ -149,15 +35,7 @@ const getBuddhistHolyDay = (khDate, date) => {
       <TheCalendar @onUpdatePage="onUpdatePage" @onClick="onClick" />
     </div>
     <div class="w-full">
-      <TheHolidaysList
-        :events="attrStore.attrs"
-        :title="
-          'ព្រឹត្តិការណ៍ប្រចាំ ខែ' +
-          moment({ M: currentMonthYear.m - 1, y: currentMonthYear.y })
-            .locale('km')
-            .format('MMMM ឆ្នាំYYYY')
-        "
-      />
+      <TheHolidaysList :events="attrStore.attrs" :month="monthYear" />
     </div>
   </div>
   <!-- Modal-->

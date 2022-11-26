@@ -3,20 +3,17 @@ import moment from "moment";
 import "moment/locale/km";
 import { onMounted } from "vue";
 
-defineProps({
+const props = defineProps({
   events: Object,
-  title: String,
+  month: Object,
 });
 
-onMounted(() => {
-
-});
 </script>
 
 <template>
   <div class="rounded-xl border bg-white p-3 mt-5 font-hanuman">
     <h2 class="text-lg md:text-xl lg:text-2xl font-bold text-blue-600">
-      {{ title ?? "ព្រឹត្តិការណ៍ប្រចាំខែ" }}
+      {{ "ព្រឹត្តិការណ៍ប្រចាំខែ" + month.format("MMMM") }}
     </h2>
     <ol class="relative border-l border-gray-200 font-nokora">
       <template v-for="(holiday, index) in events" :key="index">
@@ -27,6 +24,7 @@ onMounted(() => {
           "
         >
           <li
+            v-if="month.isSame(holiday.dates, 'months')"
             class="ml-4 mt-4 cursor-pointer"
             :class="[
               holiday.customData.description === 'Holiday in Cambodia'
