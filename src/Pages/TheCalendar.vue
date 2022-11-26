@@ -4,10 +4,10 @@ import { computed, onMounted, ref, watch } from "vue";
 import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/vue/24/solid";
 import useKhmerDate from "../Composables/useKhmerDate.js";
 import { debounce } from "lodash";
+import { useAttributeStore } from "../Stores/useAttributeStore.js";
 
-const props = defineProps({
-  attributes: Object,
-});
+const attrStore = useAttributeStore();
+const attributes = attrStore.attrs;
 const emit = defineEmits(["onPrev", "onNext", "onUpdatePage", "onClick"]);
 const { khmerDate } = useKhmerDate();
 const daysOfWeek = ref([]);
@@ -174,7 +174,7 @@ const getBeYear = () => {
 };
 
 const attrsFilter = (dates) => {
-  return props.attributes.filter((item) => dates.isSame(item.dates));
+  return attributes.filter((item) => dates.isSame(item.dates));
 };
 
 const isHolidays = (attributes) => {

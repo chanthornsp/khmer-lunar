@@ -8,22 +8,14 @@ import useKhmerDate from "../Composables/useKhmerDate.js";
 import usePublicHolidays from "../Composables/usePublicHolidays.js";
 import { XMarkIcon } from "@heroicons/vue/24/solid";
 import throttle from "lodash/throttle";
+import { useAttributeStore } from "../Stores/useAttributeStore.js";
 
 const { khmerDate } = useKhmerDate();
 const { events, traditional_events } = usePublicHolidays();
-const attrs = ref([
-  {
-    key: 1,
-    customData: {
-      title: {
-        kh: "ថ្ងៃ",
-        en: "today",
-      },
-      class: "bg-blue-600 text-white",
-    },
-    dates: moment().format(),
-  },
-]);
+const attrs = ref([]);
+
+const attrStore = useAttributeStore();
+
 const currentMonthYear = ref({});
 const detail = ref({});
 const openModal = ref(false);
@@ -40,7 +32,7 @@ const onUpdatePage = (day) => {
 watch(
   dayMonth,
   throttle(() => {
-    attrs.value.length = 0;
+    attrStore.attrs.length = 0;
     generateHolidaysFromCurrentMonth(dayMonth.value);
   }, 0)
 );
@@ -49,7 +41,9 @@ const onClick = (date) => {
   openModal.value = true;
   detail.value = {
     date: date,
-    attributes: attrs.value.filter((item) => date.isSame(item.dates, "day")),
+    attributes: attrStore.attrs.filter((item) =>
+      date.isSame(item.dates, "day")
+    ),
   };
 };
 
@@ -57,12 +51,12 @@ const generateHolidaysFromCurrentMonth = (day) => {
   //get khmer new year date
   if (day.month === 4) {
     const { khmerNewYearAttrs } = useKhmerNewYearDate(day);
-    attrs.value.push(...khmerNewYearAttrs.value);
+    attrStore.attrs.push(...khmerNewYearAttrs.value);
   }
   events.value
     .filter((item) => item.start_date.month === day.month)
     .forEach((element) => {
-      attrs.value.push({
+      attrStore.attrs.push({
         key:
           "events" +
           moment({
@@ -101,7 +95,7 @@ const generateHolidaysFromCurrentMonth = (day) => {
           item.start_date.day === lurna[0] && item.start_date.month === lurna[1]
       )
       .forEach((element) => {
-        attrs.value.push({
+        attrStore.attrs.push({
           key: "traditional_events" + date,
           customData: {
             title: element.summary,
@@ -112,7 +106,7 @@ const generateHolidaysFromCurrentMonth = (day) => {
         });
       });
     if (getBuddhistHolyDay(lurna[0], date)) {
-      attrs.value.push({
+      attrStore.attrs.push({
         key: "holy-day" + date,
         customData: {
           title: {
@@ -126,7 +120,7 @@ const generateHolidaysFromCurrentMonth = (day) => {
       });
     }
   }
-  attrs.value.sort(function (x, y) {
+  attrStore.attrs.sort(function (x, y) {
     return new Date(x.dates) - new Date(y.dates);
   });
 };
@@ -152,21 +146,17 @@ const getBuddhistHolyDay = (khDate, date) => {
 <template>
   <div class="flex-col-reverse lg:flex flex-col lg:flex-row gap-4 mx-auto">
     <div class="w-full lg:w-2/3 shrink-0">
-      <TheCalendar
-        :attributes="attrs"
-        @onUpdatePage="onUpdatePage"
-        @onClick="onClick"
-      />
+      <TheCalendar @onUpdatePage="onUpdatePage" @onClick="onClick" />
     </div>
     <div class="w-full">
       <TheHolidaysList
+        :events="attrStore.attrs"
         :title="
           'ព្រឹត្តិការណ៍ប្រចាំ ខែ' +
           moment({ M: currentMonthYear.m - 1, y: currentMonthYear.y })
             .locale('km')
             .format('MMMM ឆ្នាំYYYY')
         "
-        :events="attrs"
       />
     </div>
   </div>

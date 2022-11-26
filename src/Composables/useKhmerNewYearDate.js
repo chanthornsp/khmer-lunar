@@ -28,13 +28,14 @@ export default function useKhmerNewYearDate(day) {
       };
     }
     khmerNewYearAttrs.value.push({
-      key: "traditional_holidays" + moment(date).format("YYYY-MM-DD"),
+      key:
+        "traditional_holidays" + moment(date).locale("en").format("YYYY-MM-DD"),
       customData: {
         title: title,
         description: "Holiday in Cambodia",
         class: "bg-red-600 text-white",
       },
-      dates: moment(date).format("YYYY-MM-DD"),
+      dates: moment(date).locale("en").format("YYYY-MM-DD"),
     });
   });
 
