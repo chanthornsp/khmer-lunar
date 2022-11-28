@@ -3,11 +3,9 @@ import moment from "moment";
 import usePublicHolidays from "../Composables/usePublicHolidays.js";
 import useKhmerDate from "../Composables/useKhmerDate.js";
 import useKhmerNewYearDate from "../Composables/useKhmerNewYearDate.js";
-import { useAttributeStore } from "./useAttributeStore.js";
 
 const { khmerDate } = useKhmerDate();
 const { events, traditional_events } = usePublicHolidays();
-const attrStore = useAttributeStore();
 export const useCalendarStore = defineStore("calendar", {
   state: () => ({
     days: [],
@@ -16,6 +14,7 @@ export const useCalendarStore = defineStore("calendar", {
     currentYear: moment().year(),
     currentKhmerMonths: [],
     initKhDate: [],
+    attributes: [],
   }),
   getters: {
     initDate: (state) =>
@@ -30,7 +29,7 @@ export const useCalendarStore = defineStore("calendar", {
       //init start date
       let date = this.initDate;
       //reset attrs
-      attrStore.attrs.length = 0;
+      this.attributes.length = 0;
       this.currentKhmerMonths.length = 0;
       //get khmer new year date time
       if (this.initDate.clone().month() + 1 === 4) {
@@ -38,7 +37,7 @@ export const useCalendarStore = defineStore("calendar", {
           year: this.initDate.clone().year(),
           month: this.initDate.clone().month() + 1,
         });
-        attrStore.attrs.push(...khmerNewYearAttrs.value);
+        this.attributes.push(...khmerNewYearAttrs.value);
       }
 
       //get event
@@ -46,7 +45,7 @@ export const useCalendarStore = defineStore("calendar", {
       events.value
         .filter((item) => item.start_date.month === date.clone().month() + 1)
         .forEach((element) => {
-          attrStore.attrs.push({
+          this.attributes.push({
             key:
               "events" +
               moment({
@@ -109,7 +108,7 @@ export const useCalendarStore = defineStore("calendar", {
           date: prevDate,
           khDate: khmerLurnaDate,
           nextMonth: false,
-          attributes: attrStore.attrs.filter((item) =>
+          attributes: this.attributes.filter((item) =>
             prevDate.isSame(item.dates)
           ),
         });
@@ -130,7 +129,7 @@ export const useCalendarStore = defineStore("calendar", {
           date: currentDate,
           khDate: khmerLurnaDate,
           nextMonth: false,
-          attributes: attrStore.attrs.filter((item) =>
+          attributes: this.attributes.filter((item) =>
             currentDate.isSame(item.dates)
           ),
         });
@@ -158,7 +157,7 @@ export const useCalendarStore = defineStore("calendar", {
           date: nextDate,
           khDate: khmerLurnaDate,
           nextMonth: true,
-          attributes: attrStore.attrs.filter((item) =>
+          attributes: this.attributes.filter((item) =>
             nextDate.isSame(item.dates)
           ),
         });
@@ -178,7 +177,7 @@ export const useCalendarStore = defineStore("calendar", {
       ).split("_");
 
       //sorting attrs
-      attrStore.attrs.sort(function (x, y) {
+      this.attributes.sort(function (x, y) {
         return new Date(x.dates) - new Date(y.dates);
       });
     },
@@ -192,7 +191,7 @@ export const useCalendarStore = defineStore("calendar", {
             item.start_date.month === lurna[1]
         )
         .forEach((element) => {
-          attrStore.attrs.push({
+          this.attributes.push({
             key: "traditional_events" + dates.date,
             customData: {
               title: element.summary,
@@ -203,7 +202,7 @@ export const useCalendarStore = defineStore("calendar", {
           });
         });
       if (this.getBuddhistHolyDay(lurna[0], dates.date)) {
-        attrStore.attrs.push({
+        this.attributes.push({
           key: "holy-day" + dates.date,
           customData: {
             title: {

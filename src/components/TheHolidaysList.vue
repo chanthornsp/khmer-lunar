@@ -1,22 +1,23 @@
 <script setup>
 import moment from "moment";
-import "moment/locale/km";
-import { onMounted } from "vue";
 
-const props = defineProps({
-  events: Object,
-  month: Object,
-});
+import { computed } from "vue";
+import { useCalendarStore } from "../Stores/useCalendarStore.js";
 
+const calendarStore = useCalendarStore();
+const month = computed(() => calendarStore.initDate);
 </script>
 
 <template>
   <div class="rounded-xl border bg-white p-3 mt-5 font-hanuman">
     <h2 class="text-lg md:text-xl lg:text-2xl font-bold text-blue-600">
-      {{ "ព្រឹត្តិការណ៍ប្រចាំខែ" + month.format("MMMM") }}
+      {{ "ព្រឹត្តិការណ៍ប្រចាំខែ" + month.locale("km").format("MMMM") }}
     </h2>
     <ol class="relative border-l border-gray-200 font-nokora">
-      <template v-for="(holiday, index) in events" :key="index">
+      <template
+        v-for="(holiday, index) in calendarStore.attributes"
+        :key="index"
+      >
         <template
           v-if="
             holiday.customData.title.en !== 'today' &&

@@ -5,37 +5,33 @@ import { ref } from "vue";
 
 import useKhmerDate from "../Composables/useKhmerDate.js";
 import { XMarkIcon } from "@heroicons/vue/24/solid";
-import { useAttributeStore } from "../Stores/useAttributeStore.js";
 import moment from "moment";
+import { useCalendarStore } from "../Stores/useCalendarStore.js";
 
 const { khmerDate } = useKhmerDate();
 
-const attrStore = useAttributeStore();
+const calendarStore = useCalendarStore();
 const openModal = ref(false);
 const detail = ref({});
-const monthYear = ref(moment());
 
 const onClick = (date) => {
   openModal.value = true;
   detail.value = {
     date: date,
-    attributes: attrStore.attrs.filter((item) =>
+    attributes: calendarStore.attributes.filter((item) =>
       date.isSame(item.dates, "day")
     ),
   };
-};
-const onUpdatePage = (dates) => {
-  monthYear.value = moment({ y: dates.year, M: dates.month - 1 });
 };
 </script>
 
 <template>
   <div class="flex-col-reverse lg:flex flex-col lg:flex-row gap-4 mx-auto">
     <div class="w-full lg:w-2/3 shrink-0">
-      <TheCalendar @onUpdatePage="onUpdatePage" @onClick="onClick" />
+      <TheCalendar @onClick="onClick" />
     </div>
     <div class="w-full">
-      <TheHolidaysList :events="attrStore.attrs" :month="monthYear" />
+      <TheHolidaysList />
     </div>
   </div>
   <!-- Modal-->
@@ -52,9 +48,7 @@ const onUpdatePage = (dates) => {
       ' inset-0 z-50 flex items-center justify-center pointer-events-none',
     ]"
   >
-    <div
-      class="relative max-w-4xl max-h-screen h-full md:h-auto pointer-events-auto w-full"
-    >
+    <div class="relative max-w-4xl h-auto pointer-events-auto w-full">
       <button
         type="button"
         @click.prevent="openModal = false"
